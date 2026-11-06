@@ -7,6 +7,12 @@ Two tasks, one repo:
 | `frontend/` | **Task 1** homepage redesign + blog UI + admin demo | Next.js 15 (App Router), React 19, Tailwind CSS 4 |
 | `backend/` | **Task 2** blog backend (DB schema + REST API) | Node.js 22.5+, Express, SQLite (`node:sqlite`) |
 
+## Live demo
+
+- Site: https://tactyqal-launchpad.vercel.app
+- Blog API: https://tactyqal-launchpad-api.onrender.com/api/posts
+- Note: the API runs on Render's free tier. It sleeps when idle (first request can take ~50s) and its SQLite file resets to the seed posts on restart.
+
 ## Run it
 
 ```bash
