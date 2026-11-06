@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0b1020;
+  --color-brand: #6d5efc;
+  --color-brand-dark: #4f3fe0;
+  --color-accent: #22d3a6;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body { @apply bg-white text-slate-800 antialiased; }
+section[id] { scroll-margin-top: 5rem; }
+.prose-post h2 { @apply mt-8 mb-3 text-2xl font-bold text-slate-900; }
+.prose-post h3 { @apply mt-6 mb-2 text-xl font-semibold text-slate-900; }
+.prose-post p { @apply my-4 leading-8 text-slate-700; }
+.prose-post ul { @apply my-4 list-disc pl-6; }
