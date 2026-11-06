@@ -1,8 +1,11 @@
 import express from "express";
 import cors from "cors";
 
-const slugify = (s) =>
-  s.toLowerCase().normalize("NFKD").replace(/[^\w\s-]/g, "").trim().replace(/[\s_]+/g, "-").replace(/-+/g, "-").slice(0, 80) || "post";
+const slugify = (s) => {
+  const slug = s.toLowerCase().normalize("NFKD").replace(/[^\w\s-]/g, "").trim().replace(/[\s_]+/g, "-").replace(/-+/g, "-").slice(0, 80) || "post";
+  // Purely numeric slugs would be ambiguous with numeric ids in /posts/:idOrSlug.
+  return /^\d+$/.test(slug) ? `post-${slug}` : slug;
+};
 const readMinutes = (text) => Math.max(1, Math.round(text.trim().split(/\s+/).filter(Boolean).length / 200));
 
 export function createApp(db) {
@@ -11,11 +14,9 @@ export function createApp(db) {
   app.use(express.json({ limit: "1mb" }));
 
   // Writes are open unless ADMIN_KEY is set; then they need `x-admin-key`.
-  const requireKey = (req, res, next) => {
-    const key = process.env.ADMIN_KEY;
-    if (key && req.get("x-admin-key") !== key) return res.status(401).json({ error: "Invalid or missing admin key" });
-    next();
-  };
+  const isAdmin = (req) => !process.env.ADMIN_KEY || req.get("x-admin-key") === process.env.ADMIN_KEY;
+  const requireKey = (req, res, next) =>
+    isAdmin(req) ? next() : res.status(401).json({ error: "Invalid or missing admin key" });
 
   const tagsOf = db.prepare(
     "SELECT t.name FROM tags t JOIN post_tags pt ON pt.tag_id = t.id WHERE pt.post_id = ? ORDER BY t.name"
@@ -50,7 +51,10 @@ export function createApp(db) {
     if (partial && body.title !== undefined && !String(body.title).trim()) errors.push("title cannot be empty");
     str("title", 200); str("excerpt", 500); str("content", 200000); str("author", 100); str("cover_image", 500);
     if (body.status !== undefined && !["draft", "published"].includes(body.status)) errors.push("status must be 'draft' or 'published'");
-    if (body.tags !== undefined && !Array.isArray(body.tags)) errors.push("tags must be an array of strings");
+    if (body.tags !== undefined) {
+      if (!Array.isArray(body.tags) || body.tags.length > 20 || body.tags.some((t) => typeof t !== "string" || t.length > 50))
+        errors.push("tags must be an array of at most 20 strings of up to 50 characters");
+    }
     return errors;
   }
 
@@ -66,12 +70,13 @@ export function createApp(db) {
   app.get("/api/posts", (req, res) => {
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 10));
-    const status = ["draft", "published", "all"].includes(req.query.status) ? req.query.status : "published";
+    let status = ["draft", "published", "all"].includes(req.query.status) ? req.query.status : "published";
+    if (!isAdmin(req)) status = "published"; // drafts are only visible to admins
     const where = [], params = [];
     if (status !== "all") { where.push("p.status = ?"); params.push(status); }
     if (req.query.q) {
-      where.push("(p.title LIKE ? OR p.excerpt LIKE ? OR p.content LIKE ?)");
-      const like = `%${String(req.query.q).replace(/[%_]/g, "\\$&")}%`;
+      where.push("(p.title LIKE ? ESCAPE '\\' OR p.excerpt LIKE ? ESCAPE '\\' OR p.content LIKE ? ESCAPE '\\')");
+      const like = `%${String(req.query.q).replace(/[\\%_]/g, "\\$&")}%`;
       params.push(like, like, like);
     }
     if (req.query.tag) {
@@ -98,7 +103,7 @@ export function createApp(db) {
   // READ by numeric id or slug
   app.get("/api/posts/:idOrSlug", (req, res) => {
     const row = findOne(req.params.idOrSlug);
-    if (!row) return res.status(404).json({ error: "Post not found" });
+    if (!row || (row.status !== "published" && !isAdmin(req))) return res.status(404).json({ error: "Post not found" });
     res.json({ data: hydrate(row, true) });
   });
 
@@ -155,6 +160,7 @@ export function createApp(db) {
   // eslint-disable-next-line no-unused-vars
   app.use((err, _req, res, _next) => {
     if (err.type === "entity.parse.failed") return res.status(400).json({ error: "Invalid JSON body" });
+    if (err.type === "entity.too.large") return res.status(413).json({ error: "Request body too large" });
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
   });

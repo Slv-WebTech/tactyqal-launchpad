@@ -4,3 +4,5 @@ node_modules
 *.db-*
 *.log
 .env.local
+test-results
+playwright-report

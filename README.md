@@ -25,7 +25,15 @@ cd frontend && npm install && cp .env.example .env.local && npm run dev
 
 Pages: `/` homepage · `/blog` (search, tag filter, pagination) · `/blog/:slug` · `/admin` (create/edit/delete UI).
 
-Tests: `cd backend && npm test`.
+## Testing
+
+| Layer | Command | What it covers |
+|---|---|---|
+| API unit/integration (26) | `cd backend && npm test` | CRUD, validation, slugs, tags, search (SQL-injection and `%`/`_` wildcards), pagination bounds, publish lifecycle, concurrency, auth/draft privacy, CORS, malformed/oversized bodies |
+| Frontend unit (7) | `cd frontend && npm test` | Markdown renderer: HTML/script escaping, edge inputs, ReDoS-style large input |
+| End-to-end (36) | `cd e2e && npm install && npx playwright test` | Real Chrome against a fresh build + in-memory DB: homepage sections/nav/FAQ/mobile menu, no overflow at 320/375/768/1440, no console errors, link integrity, blog search/tag/pagination, junk query params, 404s, full admin create→publish→rename→unpublish→delete journey, stored-XSS inertness, API-down and 500 handling, unicode/long content |
+
+The e2e run boots both apps on ports 4100/3100 and never touches real data.
 
 ## Blog API
 

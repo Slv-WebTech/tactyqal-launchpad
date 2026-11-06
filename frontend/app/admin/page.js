@@ -14,12 +14,13 @@ export default function Admin() {
   const headers = { "content-type": "application/json", ...(key && { "x-admin-key": key }) };
   const load = useCallback(async () => {
     try {
-      const r = await fetch(`${API}/posts?status=all&limit=50`);
-      setPosts((await r.json()).data);
+      const r = await fetch(`${API}/posts?status=all&limit=50`, { headers: key ? { "x-admin-key": key } : {} });
+      const json = await r.json();
+      setPosts(json.data || []);
     } catch {
       setMsg({ err: true, text: "Cannot reach the API. Is the backend running?" });
     }
-  }, []);
+  }, [key]);
   useEffect(() => { load(); }, [load]);
 
   async function save(e) {
@@ -38,7 +39,9 @@ export default function Admin() {
     load();
   }
   const edit = async (p) => {
-    const { data } = await (await fetch(`${API}/posts/${p.id}`)).json();
+    const r = await fetch(`${API}/posts/${p.id}`, { headers: key ? { "x-admin-key": key } : {} });
+    if (!r.ok) return setMsg({ err: true, text: "Could not load post (admin key?)" });
+    const { data } = await r.json();
     setEditing(p.id);
     setForm({ title: data.title, excerpt: data.excerpt, content: data.content, author: data.author, tags: data.tags.join(", "), status: data.status });
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -52,13 +55,13 @@ export default function Admin() {
       <input value={key} onChange={(e) => setKey(e.target.value)} type="password" placeholder="Admin key (optional)" className={`${field} mt-4 max-w-xs`} />
       {msg && <p className={`mt-4 rounded-lg p-3 text-sm ${msg.err ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}`}>{msg.text}</p>}
 
-      <div className="mt-8 grid gap-10 lg:grid-cols-2">
-        <form onSubmit={save} className="space-y-3">
+      <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-2">
+        <form onSubmit={save} className="min-w-0 space-y-3">
           <h2 className="text-xl font-bold">{editing ? "Edit post" : "New post"}</h2>
           <input required className={field} placeholder="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
           <input className={field} placeholder="Excerpt" value={form.excerpt} onChange={(e) => setForm({ ...form, excerpt: e.target.value })} />
           <textarea rows={10} className={field} placeholder="Content (## headings, - lists, **bold**)" value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 [&>*]:min-w-0">
             <input className={field} placeholder="Author" value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} />
             <select className={field} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
               <option value="draft">Draft</option>
@@ -72,7 +75,7 @@ export default function Admin() {
           </div>
         </form>
 
-        <div>
+        <div className="min-w-0">
           <h2 className="text-xl font-bold">All posts ({posts.length})</h2>
           <ul className="mt-3 divide-y rounded-xl border">
             {posts.map((p) => (
