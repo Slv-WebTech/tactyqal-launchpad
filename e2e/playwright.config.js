@@ -1,7 +1,7 @@
 import { defineConfig } from "@playwright/test";
 
 const API = "http://localhost:4100";
-const WEB = "http://localhost:3100";
+const WEB = "http://localhost:3500";
 
 // Boots both apps on dedicated ports with a fresh in-memory DB, so e2e never touches real data.
 export default defineConfig({
@@ -21,7 +21,7 @@ export default defineConfig({
       timeout: 30_000,
     },
     {
-      command: "npm run build && npm start -- -p 3100",
+      command: "npm run build && npm start -- -p 3500",
       cwd: "../frontend",
       url: WEB,
       env: { NEXT_PUBLIC_API_URL: `${API}/api` },

@@ -33,11 +33,12 @@ const POSTS = [
 
 export function seed(db) {
   const ins = db.prepare(
-    `INSERT INTO posts (slug, title, excerpt, content, status, read_minutes, published_at) VALUES (?,?,?,?, 'published', ?, ?)`
+    `INSERT INTO posts (slug, title, excerpt, content, status, read_minutes, published_at, sort_at) VALUES (?,?,?,?, 'published', ?, ?, ?)`
   );
   for (const p of POSTS) {
     const slug = p.title.toLowerCase().replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "-");
-    const id = Number(ins.run(slug, p.title, p.excerpt, p.content, Math.max(3, Math.round(p.content.split(/\s+/).length / 200)), new Date(p.date).toISOString()).lastInsertRowid);
+    const when = new Date(p.date).toISOString();
+    const id = Number(ins.run(slug, p.title, p.excerpt, p.content, Math.max(3, Math.round(p.content.split(/\s+/).length / 200)), when, when).lastInsertRowid);
     for (const t of p.tags) {
       db.prepare("INSERT OR IGNORE INTO tags(name) VALUES (?)").run(t);
       const { id: tid } = db.prepare("SELECT id FROM tags WHERE name = ?").get(t);

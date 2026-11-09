@@ -35,16 +35,31 @@ test.describe("live API (read-only)", () => {
     }
   });
 
-  test("validation rejects bad writes WITHOUT creating data (400 before insert)", async ({ request }) => {
+  test("anonymous writes are rejected (401) and change nothing", async ({ request }) => {
     const before = (await (await request.get(`${API}/posts?status=all`)).json()).meta.total;
-    for (const data of [{}, { title: "   " }, { title: 5 }, { title: "x", status: "bogus" }, { title: "x", tags: [{ a: 1 }] }]) {
-      expect((await request.post(`${API}/posts`, { data })).status(), JSON.stringify(data)).toBe(400);
-    }
-    expect((await request.post(`${API}/posts`, { headers: { "content-type": "application/json" }, data: "{bad" })).status()).toBe(400);
-    expect((await request.put(`${API}/posts/999999`, { data: { title: "x" } })).status()).toBe(404);
-    expect((await request.delete(`${API}/posts/999999`)).status()).toBe(404);
-    const after = (await (await request.get(`${API}/posts?status=all`)).json()).meta.total;
-    expect(after).toBe(before);
+    const H = { "content-type": "application/json" };
+    expect((await request.post(`${API}/posts`, { headers: H, data: { title: "anon" } })).status()).toBe(401);
+    expect((await request.post(`${API}/posts`, { headers: { ...H, "x-admin-key": "wrong" }, data: { title: "anon" } })).status()).toBe(401);
+    expect((await request.put(`${API}/posts/1`, { headers: H, data: { title: "hijack" } })).status()).toBe(401);
+    expect((await request.delete(`${API}/posts/1`)).status()).toBe(401);
+    expect((await (await request.get(`${API}/posts?status=all`)).json()).meta.total).toBe(before);
+  });
+
+  test("drafts are not readable anonymously (list, status=all)", async ({ request }) => {
+    const all = await (await request.get(`${API}/posts?status=all&limit=50`)).json();
+    expect(all.data.every((p) => p.status === "published")).toBe(true);
+  });
+
+  // Only runs when you pass the real key: LIVE_ADMIN_KEY=... npx playwright test -c live.config.js
+  test("with the admin key: validation rejects bad writes WITHOUT creating data", async ({ request }) => {
+    test.skip(!process.env.LIVE_ADMIN_KEY, "set LIVE_ADMIN_KEY to run authenticated live checks");
+    const H = { "content-type": "application/json", "x-admin-key": process.env.LIVE_ADMIN_KEY };
+    const before = (await (await request.get(`${API}/posts?status=all`, { headers: H })).json()).meta.total;
+    for (const data of [{}, { title: "   " }, { title: 5 }, { title: "x", status: "bogus" }, { title: "x", tags: [{ a: 1 }] }])
+      expect((await request.post(`${API}/posts`, { headers: H, data })).status(), JSON.stringify(data)).toBe(400);
+    expect((await request.put(`${API}/posts/999999`, { headers: H, data: { title: "x" } })).status()).toBe(404);
+    expect((await request.delete(`${API}/posts/999999`, { headers: H })).status()).toBe(404);
+    expect((await (await request.get(`${API}/posts?status=all`, { headers: H })).json()).meta.total).toBe(before);
   });
 
   test("CORS allows the deployed frontend origin", async ({ request }) => {
@@ -55,6 +70,7 @@ test.describe("live API (read-only)", () => {
 
   test("security headers sanity: no stack traces in errors", async ({ request }) => {
     const r = await request.post(`${API}/posts`, { headers: { "content-type": "application/json" }, data: "{bad" });
+    expect([400, 401]).toContain(r.status());
     const body = await r.text();
     expect(body).not.toMatch(/at .*\.js:\d+|node_modules|SyntaxError/);
   });

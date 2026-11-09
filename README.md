@@ -34,7 +34,7 @@ Pages: `/` homepage · `/blog` (search, tag filter, pagination) · `/blog/:slug`
 | Live smoke (read-only) | `cd e2e && npx playwright test -c live.config.js` | Deployed site + API: shapes, error handling, CORS, no overflow, links, no data written |
 | End-to-end (36) | `cd e2e && npm install && npx playwright test` | Real Chrome against a fresh build + in-memory DB: homepage sections/nav/FAQ/mobile menu, no overflow at 320/375/768/1440, no console errors, link integrity, blog search/tag/pagination, junk query params, 404s, full admin create→publish→rename→unpublish→delete journey, stored-XSS inertness, API-down and 500 handling, unicode/long content |
 
-The e2e run boots both apps on ports 4100/3100 and never touches real data.
+The e2e run boots both apps on ports 4100/3500 and never touches real data.
 
 ## Blog API
 
@@ -69,4 +69,4 @@ Real auth (JWT/sessions) instead of a shared key, image uploads, PostgreSQL + mi
 ## Deploying
 
 - **Frontend (Vercel):** import the repo, set root directory to `frontend`, add env var `NEXT_PUBLIC_API_URL=https://<your-api-host>/api`.
-- **Backend (Render/Railway/Fly):** root directory `backend`, build `npm install`, start `npm start`, Node 22.5+. Mount a persistent disk and set `DB_FILE` to a path on it (SQLite is a single file). Set `ADMIN_KEY` in production.
+- **Backend (Render/Railway/Fly):** root directory `backend`, build `npm install`, start `npm start`, Node 22.5+. Mount a persistent disk and set `DB_FILE` to a path on it (SQLite is a single file). **Required env vars in production:** `NODE_ENV=production` and `ADMIN_KEY` (at least 24 random characters, e.g. `openssl rand -base64 32`). With `NODE_ENV=production` the API **refuses to start** without a strong key, so a missing variable can never leave writes open. Without `NODE_ENV=production` (local dev) writes are open when no key is set. In `/admin`, paste the key into the "Admin key" field to see drafts and save changes. Use `/api/ready` as the load-balancer health check.
