@@ -17,6 +17,9 @@ Two tasks, one repo:
 
 ```bash
 # terminal 1 — API on :4000 (auto-seeds 6 posts on first run)
+# Writes are closed by default. For local dev pick one:
+#   ALLOW_OPEN_WRITES=1 npm start          (macOS/Linux)   |   $env:ALLOW_OPEN_WRITES=1; npm start   (PowerShell)
+#   ADMIN_KEY=<24+ chars> npm start        then paste the key into the Admin key field on /admin
 cd backend && npm install && npm start
 
 # terminal 2 — site on :3000
@@ -49,7 +52,7 @@ Base URL `http://localhost:4000/api`
 | DELETE | `/posts/:idOrSlug` | 204 |
 | GET | `/tags` | tags with published-post counts |
 
-Writes are open by default for easy demoing. Set `ADMIN_KEY=...` and send header `x-admin-key` to protect them.
+**Writes are closed by default.** Set `ADMIN_KEY` (24+ chars) and send it as the `x-admin-key` header, or, for local development only, set `ALLOW_OPEN_WRITES=1`. With neither, the API is read-only and every write returns 401. Drafts are only visible with the key.
 
 ## Database design
 
@@ -69,4 +72,4 @@ Real auth (JWT/sessions) instead of a shared key, image uploads, PostgreSQL + mi
 ## Deploying
 
 - **Frontend (Vercel):** import the repo, set root directory to `frontend`, add env var `NEXT_PUBLIC_API_URL=https://<your-api-host>/api`.
-- **Backend (Render/Railway/Fly):** root directory `backend`, build `npm install`, start `npm start`, Node 22.5+. Mount a persistent disk and set `DB_FILE` to a path on it (SQLite is a single file). **Required env vars in production:** `NODE_ENV=production` and `ADMIN_KEY` (at least 24 random characters, e.g. `openssl rand -base64 32`). With `NODE_ENV=production` the API **refuses to start** without a strong key, so a missing variable can never leave writes open. Without `NODE_ENV=production` (local dev) writes are open when no key is set. In `/admin`, paste the key into the "Admin key" field to see drafts and save changes. Use `/api/ready` as the load-balancer health check.
+- **Backend (Render/Railway/Fly):** root directory `backend`, build `npm install`, start `npm start`, Node 22.5+. Mount a persistent disk and set `DB_FILE` to a path on it (SQLite is a single file). **Production env vars:** set `ADMIN_KEY` (at least 24 random characters, e.g. `openssl rand -base64 32`) and `NODE_ENV=production`. Writes are closed by default, so forgetting the key leaves the API safely read-only instead of open; `ALLOW_OPEN_WRITES=1` is refused in production. In `/admin`, paste the key into the "Admin key" field to see drafts and save changes. Use `/api/ready` as the load-balancer health check.

@@ -3,10 +3,11 @@ import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
 import { openDb } from "../src/db.js";
 import { createApp } from "../src/app.js";
+import { listenSafe } from "./helpers.js";
 import { loadConfig } from "../src/config.js";
 
 async function start({ config, db = openDb(":memory:") } = {}) {
-  const server = createApp(db, config ?? { adminKey: null, production: false }).listen(0);
+  const server = await listenSafe(createApp(db, config ?? { adminKey: null, allowOpenWrites: true }));
   const base = `http://localhost:${server.address().port}/api`;
   const call = (path, method = "GET", body, headers = {}) =>
     fetch(base + path, { method, headers: { "content-type": "application/json", ...headers }, body: body === undefined ? undefined : JSON.stringify(body) });
@@ -15,14 +16,44 @@ async function start({ config, db = openDb(":memory:") } = {}) {
 }
 const withApp = (name, fn, opts) => test(name, async () => { const c = await start(opts); try { await fn(c); } finally { c.server.close(); } });
 
-// ---- S1: fail-closed auth ----
-test("production refuses to boot without a strong ADMIN_KEY", () => {
-  assert.throws(() => loadConfig({ NODE_ENV: "production" }), /ADMIN_KEY/);
-  assert.throws(() => loadConfig({ NODE_ENV: "production", ADMIN_KEY: "short" }), /ADMIN_KEY/);
+// ---- S1: closed by default ----
+test("config: weak keys and production open-writes are refused; defaults are closed", () => {
+  assert.throws(() => loadConfig({ ADMIN_KEY: "short" }), /ADMIN_KEY/);
   assert.throws(() => loadConfig({ NODE_ENV: "production", ADMIN_KEY: "x".repeat(23) }), /ADMIN_KEY/);
-  assert.deepEqual(loadConfig({ NODE_ENV: "production", ADMIN_KEY: "x".repeat(24) }), { adminKey: "x".repeat(24), production: true });
-  assert.doesNotThrow(() => loadConfig({})); // dev stays convenient
+  assert.throws(() => loadConfig({ NODE_ENV: "production", ALLOW_OPEN_WRITES: "1" }), /ALLOW_OPEN_WRITES/);
+  assert.deepEqual(loadConfig({}), { adminKey: null, production: false, allowOpenWrites: false }, "nothing set => closed");
+  assert.equal(loadConfig({ ALLOW_OPEN_WRITES: "true" }).allowOpenWrites, false, "only the exact value 1 opens writes");
+  assert.equal(loadConfig({ ALLOW_OPEN_WRITES: "1" }).allowOpenWrites, true);
+  assert.equal(loadConfig({ ALLOW_OPEN_WRITES: "1", ADMIN_KEY: "x".repeat(24) }).allowOpenWrites, false, "a key always wins over open mode");
+  assert.equal(loadConfig({ NODE_ENV: "production" }).allowOpenWrites, false, "production without a key runs read-only, it does not crash or open up");
 });
+
+withApp("with NO configuration at all: reads work, every write is rejected, drafts stay hidden", async ({ call, db, make }) => {
+  // seed one draft + one published directly in the DB (the API can't create them in closed mode)
+  db.exec("INSERT INTO posts(slug,title,status,published_at,sort_at) VALUES ('pub','Pub','published','2025-01-01T00:00:00.000Z','2025-01-01T00:00:00.000Z'), ('dr','Draft','draft',NULL,'2025-01-02T00:00:00.000Z')");
+  assert.equal((await call("/posts")).status, 200);
+  assert.equal((await call("/posts/pub")).status, 200);
+  assert.equal((await call("/posts/dr")).status, 404, "draft hidden");
+  assert.equal((await call("/posts?status=all")).headers.get("content-type").includes("json"), true);
+  assert.equal((await (await call("/posts?status=all")).json()).meta.total, 1);
+  for (const [method, path, body] of [["POST", "/posts", { title: "x" }], ["POST", "/posts", {}], ["PUT", "/posts/pub", { title: "x" }], ["PATCH", "/posts/pub", { title: "x" }], ["DELETE", "/posts/pub"]]) {
+    for (const h of [{}, { "x-admin-key": "anything" }, { "x-admin-key": "" }]) {
+      const r = await call(path, method, body, h);
+      assert.equal(r.status, 401, `${method} ${path} with ${JSON.stringify(h)}`);
+      assert.match((await r.json()).error, /disabled/);
+    }
+  }
+  assert.equal(db.prepare("SELECT COUNT(*) c FROM posts").get().c, 2, "nothing changed");
+  assert.equal(await make({ title: "nope" }), undefined);
+}, { config: loadConfig({}) });
+
+withApp("ALLOW_OPEN_WRITES=1 (dev opt-in) opens writes; a configured key overrides it", async ({ call }) => {
+  assert.equal((await call("/posts", "POST", { title: "dev" })).status, 201);
+}, { config: loadConfig({ ALLOW_OPEN_WRITES: "1" }) });
+
+withApp("ADMIN_KEY + ALLOW_OPEN_WRITES together: key still required", async ({ call }) => {
+  assert.equal((await call("/posts", "POST", { title: "x" })).status, 401);
+}, { config: loadConfig({ ALLOW_OPEN_WRITES: "1", ADMIN_KEY: "z".repeat(24) }) });
 
 withApp("anonymous and wrong-key writes are rejected; right key works; no state change", async ({ call, db }) => {
   const K = "k".repeat(32);
@@ -31,7 +62,7 @@ withApp("anonymous and wrong-key writes are rejected; right key works; no state 
   }
   assert.equal(db.prepare("SELECT COUNT(*) c FROM posts").get().c, 0);
   assert.equal((await call("/posts", "POST", { title: "x" }, { "x-admin-key": K })).status, 201);
-}, { config: { adminKey: "k".repeat(32), production: true } });
+}, { config: { adminKey: "k".repeat(32), production: true, allowOpenWrites: false } });
 
 withApp("X-Powered-By is not advertised", async ({ call }) => {
   assert.equal((await call("/posts")).headers.get("x-powered-by"), null);

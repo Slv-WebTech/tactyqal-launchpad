@@ -2,10 +2,12 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { openDb } from "../src/db.js";
 import { createApp } from "../src/app.js";
+import { listenSafe } from "./helpers.js";
+process.env.ALLOW_OPEN_WRITES = "1"; // these suites exercise write paths without a key
 
 async function start() {
   const db = openDb(":memory:");
-  const server = createApp(db).listen(0);
+  const server = await listenSafe(createApp(db));
   const base = `http://localhost:${server.address().port}/api`;
   const call = (path, method = "GET", body, headers = {}) =>
     fetch(base + path, {
@@ -220,13 +222,13 @@ withApp("20 concurrent creates with the same title all succeed with unique slugs
 
 // ---------- auth ----------
 test("ADMIN_KEY: writes AND draft access are protected; public reads stay open", async () => {
-  process.env.ADMIN_KEY = "s3cret";
+  process.env.ADMIN_KEY = "s3cret-key-for-tests-0123456789";
   const { server, call, db } = await start();
-  const K = { "x-admin-key": "s3cret" };
+  const K = { "x-admin-key": "s3cret-key-for-tests-0123456789" };
   try {
     const draft = (await (await call("/posts", "POST", { title: "Draft" }, K)).json()).data;
     const pub = (await (await call("/posts", "POST", { title: "Pub", status: "published" }, K)).json()).data;
-    for (const h of [{}, { "x-admin-key": "wrong" }, { "x-admin-key": "" }, { "X-ADMIN-KEY": "S3CRET" }]) {
+    for (const h of [{}, { "x-admin-key": "wrong" }, { "x-admin-key": "" }, { "X-ADMIN-KEY": "S3CRET-KEY-FOR-TESTS-0123456789" }]) {
       assert.equal((await call("/posts", "POST", { title: "x" }, h)).status, 401);
       assert.equal((await call(`/posts/${pub.id}`, "PUT", { title: "x" }, h)).status, 401);
       assert.equal((await call(`/posts/${pub.id}`, "DELETE", undefined, h)).status, 401);

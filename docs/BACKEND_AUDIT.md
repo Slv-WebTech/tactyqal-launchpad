@@ -583,7 +583,7 @@ Run it as three passes: (1) **baseline** on one instance to find the knee; (2) *
 
 | Finding | Status | Evidence |
 |---|---|---|
-| S1 fail-open auth | **Fixed in code** (production refuses to boot without a >=24-char `ADMIN_KEY`; constant-time compare). **Live API still needs the env vars set on Render** (see README "Deploying") | `hardening.test.js` (auth, config); live canary in `e2e/live/smoke.spec.js` |
+| S1 fail-open auth | **Fixed: closed by default.** No `ADMIN_KEY` = every write returns 401 and drafts are hidden; open writes only via explicit `ALLOW_OPEN_WRITES=1` (refused in production); keys must be >=24 chars; constant-time compare. Deploying this commit locks the live API even with no dashboard variables | `hardening.test.js` (auth, config); live canary in `e2e/live/smoke.spec.js` |
 | P1 list query / deep pages | **Fixed** (`sort_at` ISO column, `idx_posts_list`, no `content` read in lists, auto-migration for old DBs) | deep page (page 400, 5k posts): **p50 2.3 s -> ~45 ms, 4 -> ~210 req/s**; plan test: no temp B-tree |
 | P2 N+1 tags | **Fixed** (tags aggregated in the same query) | list = 2 statements for 3 or 50 rows (was 8 for 6 rows, 51+ for 50) |
 | P3 re-preparing statements | **Fixed** for fixed statements (prepared once) | test: 0 prepares for reads/creates after startup |

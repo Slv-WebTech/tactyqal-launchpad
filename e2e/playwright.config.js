@@ -16,7 +16,7 @@ export default defineConfig({
       command: "node src/server.js",
       cwd: "../backend",
       url: `${API}/api/health`,
-      env: { PORT: "4100", DB_FILE: ":memory:" },
+      env: { PORT: "4100", DB_FILE: ":memory:", ALLOW_OPEN_WRITES: "1" }, // e2e writes via the API without a key (dev opt-in)
       reuseExistingServer: false,
       timeout: 30_000,
     },

@@ -1,15 +1,15 @@
 import { openDb } from "./db.js";
 import { createApp } from "./app.js";
-import { loadConfig } from "./config.js";
+import { loadConfig, describeMode } from "./config.js";
 import { seed } from "./seed.js";
 
-const config = loadConfig(); // throws in production without a strong ADMIN_KEY
+const config = loadConfig(); // throws on a weak ADMIN_KEY or ALLOW_OPEN_WRITES in production
 const db = openDb();
 if (db.prepare("SELECT COUNT(*) c FROM posts").get().c === 0) seed(db);
 
 const port = process.env.PORT || 4000;
 const server = createApp(db, config).listen(port, () =>
-  console.log(`Blog API on http://localhost:${port}/api (${config.adminKey ? "admin key required for writes" : "WRITES OPEN: no ADMIN_KEY set"})`)
+  console.log(`Blog API on http://localhost:${port}/api (${describeMode(config)})`)
 );
 // stay above typical load-balancer idle timeouts (60s) to avoid intermittent 502s
 server.keepAliveTimeout = 65_000;

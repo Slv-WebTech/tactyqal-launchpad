@@ -27,11 +27,13 @@ export function createApp(db, config = loadConfig()) {
   app.use(cors());
   app.use(express.json({ limit: "1mb" }));
 
-  // ---- auth: constant-time key comparison; open only when no key is configured (non-production) ----
+  // ---- auth: closed by default; constant-time key comparison ----
   const keyDigest = config.adminKey ? digest(config.adminKey) : null;
-  const isAdmin = (req) => keyDigest === null || timingSafeEqual(digest(req.get("x-admin-key")), keyDigest);
+  const isAdmin = (req) => (keyDigest ? timingSafeEqual(digest(req.get("x-admin-key")), keyDigest) : config.allowOpenWrites === true);
   const requireKey = (req, res, next) =>
-    isAdmin(req) ? next() : res.status(401).json({ error: "Invalid or missing admin key" });
+    isAdmin(req)
+      ? next()
+      : res.status(401).json({ error: keyDigest ? "Invalid or missing admin key" : "Writes are disabled: no ADMIN_KEY is configured on the server" });
 
   // ---- prepared once, reused for every request ----
   const q = {

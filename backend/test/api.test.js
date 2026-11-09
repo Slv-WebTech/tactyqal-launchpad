@@ -2,9 +2,11 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { openDb } from "../src/db.js";
 import { createApp } from "../src/app.js";
+import { listenSafe } from "./helpers.js";
+process.env.ALLOW_OPEN_WRITES = "1"; // these suites exercise write paths without a key
 
 async function start() {
-  const server = createApp(openDb(":memory:")).listen(0);
+  const server = await listenSafe(createApp(openDb(":memory:")));
   const base = `http://localhost:${server.address().port}/api`;
   const call = (path, method = "GET", body, headers = {}) =>
     fetch(base + path, { method, headers: { "content-type": "application/json", ...headers }, body: body ? JSON.stringify(body) : undefined });
@@ -49,11 +51,11 @@ test("validation and duplicate slugs", async () => {
 });
 
 test("ADMIN_KEY protects writes", async () => {
-  process.env.ADMIN_KEY = "secret";
+  process.env.ADMIN_KEY = "secret-key-for-tests-0123456789";
   const { server, call } = await start();
   try {
     assert.equal((await call("/posts", "POST", { title: "x" })).status, 401);
-    assert.equal((await call("/posts", "POST", { title: "x" }, { "x-admin-key": "secret" })).status, 201);
+    assert.equal((await call("/posts", "POST", { title: "x" }, { "x-admin-key": "secret-key-for-tests-0123456789" })).status, 201);
     assert.equal((await call("/posts?status=all")).status, 200);
   } finally { server.close(); delete process.env.ADMIN_KEY; }
 });
