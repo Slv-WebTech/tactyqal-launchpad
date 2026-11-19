@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const API = "http://localhost:4100/api";
+const API = process.env.E2E_API || "http://localhost:4100/api";
 
 function trackErrors(page) {
   const errors = [];
@@ -176,6 +176,8 @@ test.describe("blog", () => {
   test("unknown post and weird slugs give the 404 page, not a crash", async ({ page }) => {
     for (const slug of ["nope", "%00", "..%2Fetc%2Fpasswd", "a".repeat(500), "123456789"]) {
       const res = await page.goto(`/blog/${slug}`);
+      // A NUL byte (%00) is rejected with 400 by hosting edges (e.g. Vercel) before the app sees it; locally it is a 404.
+      if (slug === "%00") { expect([400, 404], slug).toContain(res.status()); continue; }
       expect(res.status(), slug).toBe(404);
       await expect(page.getByText("Page not found")).toBeVisible();
     }

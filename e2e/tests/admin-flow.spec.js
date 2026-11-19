@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const API = "http://localhost:4100/api";
+const API = process.env.E2E_API || "http://localhost:4100/api";
 const row = (page, title) => page.locator("ul.divide-y li", { hasText: title });
 
 test.describe.configure({ mode: "serial" });
