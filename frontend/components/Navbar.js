@@ -11,7 +11,7 @@ export default function Navbar() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
         <Link href="/" className="flex items-center gap-2 text-lg font-extrabold text-ink">
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand text-white">T</span>
-          Tactyqal<span className="text-brand">Labs</span>
+          Tactyqal<span className="text-brand-dark">Labs</span>
         </Link>
         <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 lg:flex">
           {NAV.map(([label, href]) => (

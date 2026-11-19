@@ -46,7 +46,7 @@ export default function Admin() {
     setForm({ title: data.title, excerpt: data.excerpt, content: data.content, author: data.author, tags: data.tags.join(", "), status: data.status });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  const field = "w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-brand";
+  const field = "w-full rounded-lg border border-slate-400 px-3 py-2 outline-none focus:border-brand";
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-12">
@@ -85,7 +85,7 @@ export default function Admin() {
                   <p className="text-xs text-slate-500"><span className={p.status === "published" ? "text-emerald-600" : "text-amber-600"}>{p.status}</span> · /{p.slug}</p>
                 </div>
                 <div className="flex shrink-0 gap-3 text-sm">
-                  <button onClick={() => edit(p)} className="text-brand hover:underline">Edit</button>
+                  <button onClick={() => edit(p)} className="text-brand-dark hover:underline">Edit</button>
                   <button onClick={() => remove(p)} className="text-red-600 hover:underline">Delete</button>
                 </div>
               </li>

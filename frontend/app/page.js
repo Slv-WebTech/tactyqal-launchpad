@@ -42,7 +42,7 @@ const FAQ = [
 const Section = ({ id, eyebrow, title, children, tint }) => (
   <section id={id} className={tint ? "bg-slate-50" : ""}>
     <div className="mx-auto max-w-6xl px-5 py-20">
-      <p className="text-sm font-semibold uppercase tracking-wider text-brand">{eyebrow}</p>
+      <p className="text-sm font-semibold uppercase tracking-wider text-brand-dark">{eyebrow}</p>
       <h2 className="mt-2 max-w-2xl text-3xl font-extrabold text-ink md:text-4xl">{title}</h2>
       <div className="mt-10">{children}</div>
     </div>
@@ -54,21 +54,21 @@ export default async function Home() {
   return (
     <>
       <section className="relative overflow-hidden bg-ink text-white">
-        <div className="pointer-events-none absolute -top-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-brand/40 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-40 -left-32 h-96 w-96 rounded-full bg-accent/20 blur-3xl" />
+        <div className="pointer-events-none absolute -top-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-accent/30 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-40 -left-32 h-96 w-96 rounded-full bg-brand/60 blur-3xl" />
         <div className="relative mx-auto max-w-6xl px-5 py-24 md:py-32">
           <span className="rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-medium">1:1 mentoring · Idea to full-stack app · No coding</span>
           <h1 className="mt-6 max-w-3xl text-4xl font-extrabold leading-tight md:text-6xl">
-            Empower your teen to build an app that <span className="bg-gradient-to-r from-brand to-accent bg-clip-text text-transparent">impacts millions</span> — in 8 weeks.
+            Empower your teen to build an app that <span className="bg-gradient-to-r from-accent to-white bg-clip-text text-transparent">impacts millions</span> — in 8 weeks.
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-slate-300">Personal mentoring that takes an idea from a notebook to a launched product, with a portfolio that stands out for admissions and grants.</p>
+          <p className="mt-6 max-w-xl text-lg text-white/85">Personal mentoring that takes an idea from a notebook to a launched product, with a portfolio that stands out for admissions and grants.</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="#contact" className="rounded-full bg-accent px-7 py-3 font-semibold text-ink transition hover:brightness-110">Book free consultation</Link>
-            <Link href="#success" className="rounded-full border border-white/30 px-7 py-3 font-semibold transition hover:bg-white/10">See success stories</Link>
+            <Link href="#contact" className="rounded-full bg-white px-7 py-3 font-semibold text-ink transition hover:bg-accent">Book free consultation</Link>
+            <Link href="#success" className="rounded-full border border-white/40 px-7 py-3 font-semibold transition hover:bg-white/10">See success stories</Link>
           </div>
           <dl className="mt-14 grid max-w-xl grid-cols-3 gap-6">
             {[["100+", "Students mentored"], ["8 wks", "Idea to launch"], ["1:1", "Live sessions"]].map(([n, l]) => (
-              <div key={l}><dt className="text-3xl font-extrabold">{n}</dt><dd className="text-sm text-slate-400">{l}</dd></div>
+              <div key={l}><dt className="text-3xl font-extrabold">{n}</dt><dd className="text-sm text-white/70">{l}</dd></div>
             ))}
           </dl>
         </div>
@@ -138,7 +138,7 @@ export default async function Home() {
         ) : (
           <p className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-slate-500">Start the blog API (see README) to load posts here.</p>
         )}
-        <Link href="/blog" className="mt-8 inline-block font-semibold text-brand hover:underline">Read all articles →</Link>
+        <Link href="/blog" className="mt-8 inline-block font-semibold text-brand-dark hover:underline">Read all articles →</Link>
       </Section>
 
       <Section id="pricing" eyebrow="Pricing" title="Start your teen's entrepreneurial journey">
@@ -158,7 +158,7 @@ export default async function Home() {
           {FAQ.map(([q, a]) => (
             <details key={q} className="group rounded-xl bg-white p-5 shadow-sm">
               <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-slate-900 [&::-webkit-details-marker]:hidden">
-                {q}<span className="text-brand transition group-open:rotate-45">+</span>
+                {q}<span className="text-brand-dark transition group-open:rotate-45">+</span>
               </summary>
               <p className="mt-3 text-sm text-slate-600">{a}</p>
             </details>
@@ -170,7 +170,7 @@ export default async function Home() {
         <div className="mx-auto max-w-4xl px-5 py-20 text-center">
           <h2 className="text-3xl font-extrabold md:text-4xl">Ready to start your teen's success story?</h2>
           <p className="mt-3 text-white/80">Email tactyqal.labs@gmail.com or call +91-98047-72106 (Mon–Sat, 9am–7pm). We reply within 24 hours.</p>
-          <a href="mailto:tactyqal.labs@gmail.com?subject=Free%20consultation" className="mt-8 inline-block rounded-full bg-white px-8 py-3 font-semibold text-brand hover:bg-slate-100">Book a free appointment</a>
+          <a href="mailto:tactyqal.labs@gmail.com?subject=Free%20consultation" className="mt-8 inline-block rounded-full bg-white px-8 py-3 font-semibold text-brand-dark hover:bg-slate-100">Book a free appointment</a>
         </div>
       </section>
     </>

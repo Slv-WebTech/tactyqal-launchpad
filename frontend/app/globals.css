@@ -1,16 +1,51 @@
 @import "tailwindcss";
 
+/*
+  Brand palette (the only hues used across the site):
+    sage   #9BA685   soft green: highlights, borders, glows
+    olive  #637545   primary action colour
+    forest #455230   text, dark surfaces, headings
+    cream  #EBEBD8   page background
+  Everything else is a mix of these four (color-mix), so the UI stays on-palette.
+*/
 @theme {
-  --color-ink: #0b1020;
-  --color-brand: #6d5efc;
-  --color-brand-dark: #4f3fe0;
-  --color-accent: #22d3a6;
+  --color-sage: #9ba685;
+  --color-olive: #637545;
+  --color-forest: #455230;
+  --color-cream: #ebebd8;
+
+  /* semantic names used by the components */
+  --color-brand: var(--color-olive);
+  --color-brand-dark: var(--color-forest);
+  --color-accent: var(--color-sage);
+  --color-ink: var(--color-forest);
+
+  /* Tailwind's neutral scale remapped onto the palette: tints of sage over cream for surfaces/borders, forest for text */
+  --color-white: color-mix(in srgb, var(--color-cream) 55%, #ffffff); /* raised surfaces + text on dark */
+  --color-slate-50: color-mix(in srgb, var(--color-sage) 16%, var(--color-cream));
+  --color-slate-100: color-mix(in srgb, var(--color-sage) 30%, var(--color-cream));
+  --color-slate-200: color-mix(in srgb, var(--color-sage) 55%, var(--color-cream));
+  --color-slate-300: var(--color-sage);
+  --color-slate-400: color-mix(in srgb, var(--color-olive) 60%, var(--color-sage));
+  --color-slate-500: color-mix(in srgb, var(--color-forest) 40%, var(--color-olive)); /* secondary text, >= 4.5:1 on cream */
+  --color-slate-600: color-mix(in srgb, var(--color-forest) 80%, var(--color-olive));
+  --color-slate-700: var(--color-forest);
+  --color-slate-800: var(--color-forest);
+  --color-slate-900: var(--color-forest);
+
+  /* status colours stay recognisable but are pulled toward the palette */
+  --color-emerald-50: color-mix(in srgb, var(--color-sage) 25%, var(--color-white));
+  --color-emerald-600: var(--color-olive);
+  --color-emerald-700: var(--color-forest);
+
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 html { scroll-behavior: smooth; }
-body { @apply bg-white text-slate-800 antialiased; }
+body { @apply bg-cream text-forest antialiased; }
+::selection { background: var(--color-sage); color: var(--color-forest); }
 section[id] { scroll-margin-top: 5rem; }
+:focus-visible { outline: 2px solid var(--color-olive); outline-offset: 2px; }
 .prose-post h2 { @apply mt-8 mb-3 text-2xl font-bold text-slate-900; }
 .prose-post h3 { @apply mt-6 mb-2 text-xl font-semibold text-slate-900; }
 .prose-post p { @apply my-4 leading-8 text-slate-700; }

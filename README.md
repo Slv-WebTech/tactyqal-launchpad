@@ -61,6 +61,7 @@ Many-to-many tags, an index on `(status, published_at)`, cascade deletes. Plain 
 
 ## Design decisions
 
+- **Theme:** four colours only: sage `#9BA685`, olive `#637545`, forest `#455230`, cream `#EBEBD8`. They live as tokens in `frontend/app/globals.css`; Tailwind's neutral scale is remapped onto them (tints are `color-mix` of the four), so changing the brand means editing one block. Text/background pairs meet WCAG AA (body 7.0:1, secondary 5.1:1, white on olive buttons 4.56:1, form borders 3.4:1). Error/destructive red is the one deliberate off-palette colour.
 - **Why replace WordPress for the blog:** one stack and one deploy, content served from a typed API, and the homepage can render live posts (see the "Blog" section of `/`).
 - **Homepage:** keeps the existing site's content and section order (success stories, 8-week program, why us, tools, testimonials, blog, pricing, FAQ, contact) with a modern dark hero, cards, responsive grid, CSS-only mobile menu and accessible `<details>` FAQ — mostly server components, ~105 kB first-load JS.
 - Blog content is a safe markdown subset rendered after HTML-escaping (no XSS from post bodies).
