@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults: { run: { working-directory: backend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm, cache-dependency-path: backend/package-lock.json }
+      - run: npm ci
+      # unit + edge + hardening + OpenAPI contract + seeded fuzz, with coverage gates
+      - run: node --no-warnings --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-branches=85 test/*.test.js
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults: { run: { working-directory: frontend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+  e2e:
+    name: E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - run: npm ci
+        working-directory: backend
+      - run: npm ci
+        working-directory: frontend
+      - run: npm ci
+        working-directory: e2e
+      # Functional + accessibility. Visual baselines are Windows/Chrome, so they are skipped on Linux runners.
+      - run: npx playwright test tests/site.spec.js tests/admin-flow.spec.js tests/a11y.spec.js --reporter=github,list
+        working-directory: e2e
+        env: { CI: "true" }
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-failures
+          path: e2e/test-results
+          retention-days: 7
+
+  security:
+    name: Security
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - name: Dependency audit (production deps, high severity and above)
+        run: |
+          for d in backend frontend e2e; do
+            echo "::group::npm audit $d"
+            (cd "$d" && npm audit --omit=dev --audit-level=high)
+            echo "::endgroup::"
+          done
+      - name: Secret scan (credential patterns and tracked env/db files)
+        run: |
+          set -e
+          fail=0
+          pattern='(gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,}|AKIA[0-9A-Z]{16}|-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----|xox[baprs]-[A-Za-z0-9-]{10,}|sk-[A-Za-z0-9]{32,}|ADMIN_KEY=[A-Za-z0-9+/]{24,})'
+          if git grep -nIE "$pattern" -- . ':!*.png' ':!package-lock.json' ':!*-snapshots/*'; then
+            echo "::error::Possible credential committed"; fail=1
+          fi
+          if git ls-files | grep -E '(^|/)\.env($|\.)' | grep -v '\.example$'; then
+            echo "::error::A real .env file is tracked"; fail=1
+          fi
+          if git ls-files | grep -E '\.(db|db-wal|db-shm|pem|key|p12|pfx)$'; then
+            echo "::error::A database or key file is tracked"; fail=1
+          fi
+          exit $fail
