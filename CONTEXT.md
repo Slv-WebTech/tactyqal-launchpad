@@ -66,18 +66,17 @@ Conventions: Conventional Commits, PRs into `main`, tests required for behaviour
 - ✅ Frontend live at https://tactyqal-launchpad.vercel.app; API live at https://tactyqal-launchpad-api.onrender.com/api (writes locked with an admin key).
 - ✅ Tests: backend 45, frontend 7, local browser 64 (36 functional, 12 accessibility, 16 visual), live site 52, live API 19. `npm audit`: 0 vulnerabilities.
 - ✅ SEO/social metadata, manifest, robots, sitemap, favicon set, Open Graph card.
-- ⏳ **Render still runs a commit older than `main`**. Deploy manually (Manual Deploy → Deploy latest commit). Adds: malformed percent-encoded URLs return `400` instead of Cloudflare `520`. Verify with `npx playwright test -c live.config.js live/contract.spec.js` (expect 3/3).
+- ✅ Render runs the latest API code (deployed 2026-11-20). Verified live: malformed percent-encoding that reaches the app returns a JSON `400`. Some forms (`%ZZ`, `%00`, trailing `%`) are rejected earlier by Cloudflare/Render's edge (HTML `400` or `520`), which the app cannot influence.
 - ⚠️ Free tier: ~50 s cold start; SQLite resets on restart, so hosted posts are not durable.
 
 ## 7. Known issues and backlog (priority order)
 
-1. Deploy latest commit to Render (above).
-2. End-user copy: the home/blog pages show developer text ("Start the blog API…") when the API is asleep. Replace with friendly copy + retry.
-3. API: rate limiting, `helmet`/CSP, `cover_image` must be an http(s) URL.
-4. Concurrency & retries: `ETag`/`If-Match`, `Idempotency-Key`, slug redirect history.
-5. Scale: PostgreSQL, FTS (`tsvector`/FTS5), keyset pagination.
-6. Test depth: Firefox/WebKit projects, Stryker mutation testing (≥ 70 % on `app.js`), k6 load job, Linux visual baselines in CI.
-7. Marketing copy review ("results guaranteed", "guaranteed admission").
+1. End-user copy: the home/blog pages show developer text ("Start the blog API…") when the API is asleep. Replace with friendly copy + retry.
+2. API: rate limiting, `helmet`/CSP, `cover_image` must be an http(s) URL.
+3. Concurrency & retries: `ETag`/`If-Match`, `Idempotency-Key`, slug redirect history.
+4. Scale: PostgreSQL, FTS (`tsvector`/FTS5), keyset pagination.
+5. Test depth: Firefox/WebKit projects, Stryker mutation testing (≥ 70 % on `app.js`), k6 load job, Linux visual baselines in CI.
+6. Marketing copy review ("results guaranteed", "guaranteed admission").
 
 Full reasoning and measured numbers: [`docs/BACKEND_AUDIT.md`](docs/BACKEND_AUDIT.md), [`docs/QA_REPORT.md`](docs/QA_REPORT.md).
 

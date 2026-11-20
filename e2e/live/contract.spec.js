@@ -45,7 +45,11 @@ test.describe("live API contract (read-only)", () => {
     await check(request, "DELETE", "/posts/{idOrSlug}", "/posts/1", 401);
   });
 
-  test("malformed URL encoding is a 400, not a 500 (regression found by fuzzing)", async ({ request }) => {
-    await check(request, "GET", "/posts/{idOrSlug}", "/posts/%E0%A4%A", 400);
+  // Malformed percent-encoding that reaches the app must be a schema-valid 400, never a 500 (regression found by fuzzing).
+  // Some forms (%ZZ, %00, a trailing incomplete "%A") are rejected earlier by the hosting edge (HTML 400 / Cloudflare 520),
+  // so only truncated multi-byte sequences are used here: those are the ones the app itself decodes.
+  test("malformed URL encoding reaching the app is a 400, not a 500", async ({ request }) => {
+    await check(request, "GET", "/posts/{idOrSlug}", "/posts/%E0%A4", 400);
+    await check(request, "GET", "/posts/{idOrSlug}", "/posts/%FF", 400);
   });
 });
