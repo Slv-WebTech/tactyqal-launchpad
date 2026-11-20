@@ -57,7 +57,7 @@ jobs:
       - run: npx playwright test tests/site.spec.js tests/admin-flow.spec.js tests/a11y.spec.js tests/offline.spec.js --reporter=github,list
         working-directory: e2e
         env: { CI: "true" }
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-failures
