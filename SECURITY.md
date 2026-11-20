@@ -21,11 +21,11 @@ Only the latest `main` (deployed to https://tactyqal-launchpad.vercel.app and th
 | Drafts | Visible only with the key (by id, slug and list) |
 | Injection | All SQL parameterised; HTML escaped before markdown formatting; fuzz-tested |
 | Errors | Structured JSON; no stack traces, SQL or file paths |
-| Dependencies | `npm audit` clean; Dependabot enabled; CI gating on high-severity advisories lands with the pipeline PR |
+| Dependencies | `npm audit` clean; Dependabot enabled; CI fails on high-severity advisories |
 
 Known gaps (see `CONTEXT.md`): no rate limiting or CSP on the API, `cover_image` is not URL-validated.
 
 ## Handling secrets
 
-- No secrets belong in the repository, issues, PRs, logs or screenshots. A credential-pattern scan runs in CI once the pipeline lands; until then run `git grep` for secrets before pushing.
+- No secrets belong in the repository, issues, PRs, logs or screenshots. CI scans for common credential patterns; GitHub secret scanning and push protection are also enabled.
 - If a secret is exposed: rotate it immediately (change `ADMIN_KEY` in the host dashboard), then remove it from history if needed and report it privately.
