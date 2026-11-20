@@ -15,7 +15,6 @@
 [![Blog API](https://img.shields.io/badge/blog%20API-render-637545?style=for-the-badge&logo=render&logoColor=EBEBD8)](https://tactyqal-launchpad-api.onrender.com/api/posts)
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-3.1-9BA685?style=for-the-badge&logo=openapiinitiative&logoColor=455230)](docs/openapi.json)
 
-[![CI](https://github.com/Slv-WebTech/tactyqal-launchpad/actions/workflows/ci.yml/badge.svg)](https://github.com/Slv-WebTech/tactyqal-launchpad/actions/workflows/ci.yml)
 ![Next.js](https://img.shields.io/badge/Next.js-16-455230?style=flat-square&logo=nextdotjs&logoColor=EBEBD8)
 ![React](https://img.shields.io/badge/React-19-455230?style=flat-square&logo=react&logoColor=EBEBD8)
 ![Tailwind](https://img.shields.io/badge/Tailwind-4-455230?style=flat-square&logo=tailwindcss&logoColor=EBEBD8)
@@ -129,7 +128,7 @@ Base URL `…/api`. Full contract: [`docs/openapi.json`](docs/openapi.json).
 ## 🔐 Security
 
 - **Closed by default.** No `ADMIN_KEY` means every write returns `401`. `ALLOW_OPEN_WRITES=1` is a local-development opt-in and is **refused when `NODE_ENV=production`**.
-- Keys must be ≥ 24 characters and are compared in constant time. Secrets live only in environment variables; `.env*` files are git-ignored and CI scans for leaked credentials.
+- Keys must be ≥ 24 characters and are compared in constant time. Secrets live only in environment variables; `.env*` files are git-ignored and a credential scan is part of the planned CI pipeline.
 - All SQL is parameterised; the renderer escapes before formatting; oversized, malformed and hostile requests return structured `4xx` errors that never leak internals.
 - Known gaps (tracked in [Project status](#-project-status)): rate limiting, security headers/CSP on the API, `cover_image` URL validation.
 
@@ -170,6 +169,7 @@ Backend: deep pagination went from 2.3 s to ~45 ms per request under load after 
 | OpenAPI contract + fuzzing | ✅ Done |
 | SEO / social metadata, icons, manifest | ✅ Done |
 | Render API runs the latest commit | ⏳ **Pending a manual deploy** (adds the malformed-URL `400` fix) |
+| GitHub Actions CI (Backend · Frontend · E2E · Security) | ⏳ Follow-up PR (needs the token's `workflow` scope) |
 | Rate limiting, API security headers, `cover_image` validation | 🔜 Planned |
 | Idempotency keys, edit-conflict detection, full-text search, PostgreSQL | 🔜 Planned (see audit) |
 | Cross-browser (Firefox/WebKit), mutation testing, load tests | 🔜 Planned |

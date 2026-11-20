@@ -10,7 +10,7 @@ Thanks for helping. This repo moves through **pull requests into `main`**; direc
    Scopes: `api`, `web`, `e2e`, `docs`, `brand`, `seo`, `ci`.
 3. **Run the checks** that match your change (below) and add tests for behaviour changes.
 4. **Open a PR** using the template. Keep it focused; one logical change per PR.
-5. CI (`Backend`, `Frontend`, `E2E`, `Security`) must pass before merge.
+5. Once the CI pipeline is enabled, `Backend`, `Frontend`, `E2E` and `Security` must pass before merge; until then run the local checks below and say so in the PR.
 
 ## Local checks
 

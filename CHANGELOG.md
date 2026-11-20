@@ -8,7 +8,7 @@ All notable changes to this project. Format follows [Keep a Changelog](https://k
 - Brand kit: logo, wordmark, README banner, favicon set (`.ico`, SVG, Apple touch, 192/512), Open Graph/Twitter card, GitHub social preview, README screenshots; reproducible via `e2e/scripts/generate-brand-assets.mjs`.
 - SEO/social metadata: tagline, meta description, keywords, canonical URL, Open Graph + Twitter cards, per-post article metadata, theme colour, web manifest, `robots.txt`, dynamic sitemap.
 - Project documentation: premium README, `CONTEXT.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, per-package READMEs.
-- Repository governance: GitHub Actions CI, issue and PR templates, `CODEOWNERS`, Dependabot, branch ruleset.
+- Repository governance: issue and PR templates, `CODEOWNERS`, Dependabot, branch ruleset. The GitHub Actions CI pipeline follows in a separate PR (pushing workflow files needs the `workflow` token scope).
 
 ### Changed
 - Page titles use a template (`%s | Tactyqal Labs`).
