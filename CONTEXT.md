@@ -54,7 +54,7 @@ Data model: `posts` (slug unique, status `draft|published`, ISO timestamps, inte
 ```bash
 cd backend  && npm test                     # 45 tests incl. contract + fuzz  (FUZZ_SEED, FUZZ_N)
 cd frontend && npm test && npm run build    # 7 tests + production build
-cd e2e && npx playwright test               # 72 tests (builds the app, boots both servers on a fresh DB)
+cd e2e && npx playwright test               # 75 tests (builds the app, boots both servers on a fresh DB)
 cd e2e && npx playwright test visual --update-snapshots   # only after an intended UI change
 cd e2e && node scripts/generate-brand-assets.mjs          # regenerate icons, social cards, screenshots
 ```
@@ -64,7 +64,7 @@ Conventions: Conventional Commits, PRs into `main`, tests required for behaviour
 ## 6. Current state (2026-11-20)
 
 - ✅ Frontend live at https://tactyqal-launchpad.vercel.app; API live at https://tactyqal-launchpad-api.onrender.com/api (writes locked with an admin key).
-- ✅ Tests: backend 45, frontend 7, local browser 72 (36 functional, 12 accessibility, 16 visual, 8 API-down), live site 52, live API 19. `npm audit`: 0 vulnerabilities.
+- ✅ Tests: backend 45, frontend 7, local browser 75 (39 functional, 12 accessibility, 16 visual, 8 API-down), live site 52, live API 19. `npm audit`: 0 vulnerabilities.
 - ✅ SEO/social metadata, manifest, robots, sitemap, favicon set, Open Graph card.
 - ✅ Render runs the latest API code (deployed 2026-11-20). Verified live: malformed percent-encoding that reaches the app returns a JSON `400`. Some forms (`%ZZ`, `%00`, trailing `%`) are rejected earlier by Cloudflare/Render's edge (HTML `400` or `520`), which the app cannot influence.
 - ⚠️ Free tier: ~50 s cold start (visitors now see a friendly auto-retrying "waking up" card, not developer text); SQLite resets on restart, so hosted posts are not durable.

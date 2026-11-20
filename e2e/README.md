@@ -6,7 +6,7 @@
 
 ```bash
 npm install
-npx playwright test                              # 72 tests on a fresh local build (API :4100, web :3500, in-memory DB)
+npx playwright test                              # 75 tests on a fresh local build (API :4100, web :3500, in-memory DB)
 npx playwright test offline                      # API-down experience (second build on :3501 pointing at a dead API)
 npx playwright test a11y                         # axe WCAG A/AA + keyboard + reflow
 npx playwright test visual --update-snapshots    # refresh baselines after an INTENDED UI change
