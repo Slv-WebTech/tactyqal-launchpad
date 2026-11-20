@@ -28,5 +28,14 @@ export default defineConfig({
       reuseExistingServer: false,
       timeout: 240_000,
     },
+    {
+      // Same site built against an API nobody listens on: exercises the "API asleep/unreachable" experience.
+      command: "npm run build && npm start -- -p 3501",
+      cwd: "../frontend",
+      url: "http://localhost:3501",
+      env: { NEXT_DIST_DIR: ".next-offline", NEXT_PUBLIC_API_URL: "http://localhost:4999/api" },
+      reuseExistingServer: false,
+      timeout: 240_000,
+    },
   ],
 });
