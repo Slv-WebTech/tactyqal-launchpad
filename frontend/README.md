@@ -29,7 +29,7 @@ npm run build && npm start     # production build
 | `app/{manifest,robots,sitemap}.js` | Web manifest, robots (admin disallowed), dynamic sitemap |
 | `app/{favicon.ico,icon.svg,apple-icon.png,opengraph-image.png}` | Generated brand assets |
 | `app/globals.css` | **Design tokens**: sage/olive/forest/cream palette and remapped neutrals |
-| `components/` | Navbar (CSS-only mobile menu), Footer, PostCard |
-| `lib/` | API client (offline-safe), safe markdown renderer |
+| `components/` | Navbar (CSS-only mobile menu), Footer, PostCard, `ApiRetry` (friendly auto-retrying state when the API is asleep) |
+| `lib/` | API client (8 s timeout, reports `offline` instead of throwing), safe markdown renderer |
 
 Design rules: AA contrast for every text pair, visible focus rings, one `h1` per page with ordered headings, labelled form controls. Tests live in [`../e2e`](../e2e).

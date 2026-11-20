@@ -50,7 +50,7 @@ Covered by 26 edge-case tests: slug generation (unicode, numeric, symbols, colli
 ## 6. User experience feedback
 
 **End user**
-- When the API is asleep or down (Render free tier takes ~50 s to wake), the **home page shows a developer message** ("Start the blog API (see README)") and `/blog` says "Start it with `npm start` in /backend". Customers should never see this. *Recommend:* friendly copy plus a retry, and cache the last good response.
+- *(Fixed 2026-11-20: friendly auto-retrying "waking up" card, covered by 8 new e2e tests.)* When the API is asleep or down (Render free tier takes ~50 s to wake), the **home page shows a developer message** ("Start the blog API (see README)") and `/blog` says "Start it with `npm start` in /backend". Customers should never see this. *Recommend:* friendly copy plus a retry, and cache the last good response.
 - Homepage copy retains aggressive claims ("results guaranteed", "guaranteed admission"); a reviewer may question them.
 - Visual quality is consistent on-palette; contrast and focus states are good.
 

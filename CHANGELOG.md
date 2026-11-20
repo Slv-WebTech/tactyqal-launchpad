@@ -12,8 +12,13 @@ All notable changes to this project. Format follows [Keep a Changelog](https://k
 - Repository governance: issue and PR templates, `CODEOWNERS`, Dependabot, branch ruleset.
 - GitHub Actions CI pipeline: Backend (coverage-gated), Frontend, E2E (functional + accessibility) and Security (audit + secret scan) jobs.
 
+### Fixed
+- **Visitors no longer see developer instructions when the API is asleep.** The home and blog pages showed "Start the blog API (see README)" / "Start it with `npm start`", and a post page showed a misleading *Page not found*. All three now show a friendly retry card that re-requests the page automatically (every 9 s, 6 times) and then offers a manual "Try again"; the admin message is plain language too.
+- Server-side API calls time out after 8 s so a cold-starting API cannot hang a page.
+
 ### Changed
 - Page titles use a template (`%s | Tactyqal Labs`).
+- `frontend/next.config.mjs` makes `distDir` overridable (used by the offline e2e build).
 
 ## [1.4.0] - 2026-11-20: QA hardening
 
