@@ -67,6 +67,42 @@ test.describe("admin: full create → publish → edit → delete journey", () =
     expect((await page.goto("/blog/e2e-renamed-post")).status()).toBe(200);
   });
 
+  test("edit form is locked while the post loads, then unlocks with the loaded values", async ({ page }) => {
+    await page.goto("/admin");
+    await row(page, "E2E Renamed Post").getByRole("button", { name: "Edit" }).click();
+    const title = page.getByPlaceholder("Title");
+    // the single-post GET is delayed 700 ms (beforeEach): the form must be inert and say so until it arrives
+    await expect(title).toBeDisabled();
+    await expect(page.locator("select")).toBeDisabled();
+    await expect(page.getByPlaceholder(/Content/)).toBeDisabled();
+    await expect(page.getByRole("status").filter({ hasText: "Loading post" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Loading…" })).toBeDisabled();
+    await expect(page.locator("form")).toHaveAttribute("aria-busy", "true");
+    // other rows cannot start a second load meanwhile
+    await expect(row(page, "E2E Renamed Post").getByRole("button", { name: "Edit" })).toBeDisabled();
+    // Cancel stays available during the load
+    await expect(page.getByRole("button", { name: "Cancel" })).toBeEnabled();
+    // then it unlocks with the loaded values
+    await expect(title).toBeEnabled();
+    await expect(title).toHaveValue("E2E Renamed Post");
+    await expect(page.getByRole("status").filter({ hasText: "Loading post" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Save changes" })).toBeEnabled();
+    await expect(page.locator("form")).toHaveAttribute("aria-busy", "false");
+  });
+
+  test("cancelling during the load discards the late response (nothing overwrites the form)", async ({ page }) => {
+    await page.goto("/admin");
+    await row(page, "E2E Renamed Post").getByRole("button", { name: "Edit" }).click();
+    await expect(page.getByPlaceholder("Title")).toBeDisabled();
+    await page.getByRole("button", { name: "Cancel" }).click(); // before the delayed response arrives
+    await expect(page.getByRole("heading", { name: "New post" })).toBeVisible();
+    await expect(page.getByPlaceholder("Title")).toBeEnabled();
+    await page.getByPlaceholder("Title").fill("typed after cancel");
+    await page.waitForTimeout(1200); // the cancelled response lands now: it must be ignored
+    await expect(page.getByPlaceholder("Title")).toHaveValue("typed after cancel");
+    await expect(page.getByRole("heading", { name: "New post" })).toBeVisible();
+  });
+
   test("cancel edit resets the form without saving", async ({ page }) => {
     await page.goto("/admin");
     await row(page, "E2E Renamed Post").getByRole("button", { name: "Edit" }).click();
@@ -182,6 +218,21 @@ test.describe("scale & content edge cases", () => {
     await expect(page.locator("article h1")).toHaveText("नमस्ते 🚀 مرحبا");
     await expect(page.locator(".prose-post h2")).toHaveText("日本語");
     await request.delete(`${API}/posts/${id}`);
+  });
+
+  test("double-clicking Create makes exactly one post (submit is locked while saving)", async ({ page, request }) => {
+    await page.route(`${API}/posts`, async (route) => {
+      if (route.request().method() === "POST") await new Promise((r) => setTimeout(r, 800)); // slow save
+      await route.continue();
+    });
+    await page.goto("/admin");
+    await page.getByPlaceholder("Title").fill("Bare minimum double submit");
+    const create = page.getByRole("button", { name: "Create post" });
+    await create.dblclick();
+    await expect(page.getByRole("button", { name: "Saving…" })).toBeDisabled();
+    await expect(page.getByText("Post created")).toBeVisible();
+    const all = await (await request.get(`${API}/posts?status=all&limit=50`)).json();
+    expect(all.data.filter((p) => p.title === "Bare minimum double submit")).toHaveLength(1);
   });
 
   test("post with empty content / no tags renders without errors", async ({ page, request }) => {

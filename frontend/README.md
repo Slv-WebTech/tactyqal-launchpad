@@ -24,7 +24,7 @@ npm run build && npm start     # production build
 |---|---|
 | `app/page.js` | Homepage sections (hero, success stories, program, why us, tools, testimonials, blog, pricing, FAQ, contact) |
 | `app/blog/` | Blog index (search, tags, pagination) and post page |
-| `app/admin/page.js` | Admin UI: create, edit, publish, delete; key field for protected API |
+| `app/admin/page.js` | Admin UI: create, edit, publish, delete; key field for protected API. The form is locked (`fieldset disabled`, `aria-busy`, "Loading post…") while a post loads or saves, and a cancelled load can never overwrite it |
 | `app/layout.js` | Title template, description, Open Graph/Twitter, theme colour |
 | `app/{manifest,robots,sitemap}.js` | Web manifest, robots (admin disallowed), dynamic sitemap |
 | `app/{favicon.ico,icon.svg,apple-icon.png,opengraph-image.png}` | Generated brand assets |

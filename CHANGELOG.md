@@ -16,6 +16,9 @@ All notable changes to this project. Format follows [Keep a Changelog](https://k
 - **Visitors no longer see developer instructions when the API is asleep.** The home and blog pages showed "Start the blog API (see README)" / "Start it with `npm start`", and a post page showed a misleading *Page not found*. All three now show a friendly retry card that re-requests the page automatically (every 9 s, 6 times) and then offers a manual "Try again"; the admin message is plain language too.
 - Server-side API calls time out after 8 s so a cold-starting API cannot hang a page.
 
+### Fixed (admin)
+- The edit form is **disabled until the post has loaded** (status message, `aria-busy`, locked controls). Before, typing in the half-second before the data arrived was overwritten by the late response. Cancelling a load discards its response, other Edit buttons are disabled meanwhile, and Create/Save is locked while saving, so a double click can no longer create two posts. Covered by 3 new e2e tests (mutation-checked against the old page).
+
 ### Changed
 - Page titles use a template (`%s | Tactyqal Labs`).
 - `frontend/next.config.mjs` makes `distDir` overridable (used by the offline e2e build).
