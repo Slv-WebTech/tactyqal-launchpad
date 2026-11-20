@@ -1,5 +1,6 @@
 import Link from "next/link";
 import PostCard from "@/components/PostCard";
+import ApiRetry from "@/components/ApiRetry";
 import { getPosts } from "@/lib/api";
 
 const STORIES = [
@@ -50,7 +51,7 @@ const Section = ({ id, eyebrow, title, children, tint }) => (
 );
 
 export default async function Home() {
-  const { data: posts } = await getPosts({ limit: 3 });
+  const { data: posts, offline } = await getPosts({ limit: 3 });
   return (
     <>
       <section className="relative overflow-hidden bg-ink text-white">
@@ -136,7 +137,7 @@ export default async function Home() {
         {posts.length ? (
           <div className="grid gap-5 md:grid-cols-3">{posts.map((p) => <PostCard key={p.id} post={p} />)}</div>
         ) : (
-          <p className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-slate-500">Start the blog API (see README) to load posts here.</p>
+          offline ? <ApiRetry compact /> : <p className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-slate-500">New articles are coming soon.</p>
         )}
         <Link href="/blog" className="mt-8 inline-block font-semibold text-brand-dark hover:underline">Read all articles →</Link>
       </Section>
