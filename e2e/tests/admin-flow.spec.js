@@ -8,6 +8,15 @@ test.describe.configure({ mode: "serial" });
 test.describe("admin: full create → publish → edit → delete journey", () => {
   const TITLE = "E2E Journey Post";
 
+  // Simulate a slow network for the single-post GET that fills the edit form. Tests must wait for the form to be
+  // populated before interacting; a fast local machine hides that race, a slower CI runner exposes it.
+  test.beforeEach(async ({ page }) => {
+    await page.route(`${API}/posts/*`, async (route) => {
+      if (route.request().method() === "GET") await new Promise((r) => setTimeout(r, 700));
+      await route.continue();
+    });
+  });
+
   test("create a draft: appears in admin, hidden from public site and public API", async ({ page, request }) => {
     await page.goto("/admin");
     await page.getByPlaceholder("Title").fill(TITLE);
@@ -50,6 +59,7 @@ test.describe("admin: full create → publish → edit → delete journey", () =
   test("rename: slug changes, old URL 404s, new URL works", async ({ page }) => {
     await page.goto("/admin");
     await row(page, TITLE).getByRole("button", { name: "Edit" }).click();
+    await expect(page.getByPlaceholder("Title")).toHaveValue(TITLE); // form is filled by an async fetch: wait for it
     await page.getByPlaceholder("Title").fill("E2E Renamed Post");
     await page.getByRole("button", { name: "Save changes" }).click();
     await expect(page.getByText("Post updated")).toBeVisible();
@@ -60,6 +70,7 @@ test.describe("admin: full create → publish → edit → delete journey", () =
   test("cancel edit resets the form without saving", async ({ page }) => {
     await page.goto("/admin");
     await row(page, "E2E Renamed Post").getByRole("button", { name: "Edit" }).click();
+    await expect(page.getByPlaceholder("Title")).toHaveValue("E2E Renamed Post");
     await page.getByPlaceholder("Title").fill("SHOULD NOT SAVE");
     await page.getByRole("button", { name: "Cancel" }).click();
     await expect(page.getByPlaceholder("Title")).toHaveValue("");
@@ -70,6 +81,8 @@ test.describe("admin: full create → publish → edit → delete journey", () =
   test("unpublish removes it from the public site again", async ({ page }) => {
     await page.goto("/admin");
     await row(page, "E2E Renamed Post").getByRole("button", { name: "Edit" }).click();
+    await expect(page.getByPlaceholder("Title")).toHaveValue("E2E Renamed Post");
+    await expect(page.locator("select")).toHaveValue("published"); // the loaded status, not the form default
     await page.locator("select").selectOption("draft");
     await page.getByRole("button", { name: "Save changes" }).click();
     await expect(page.getByText("Post updated")).toBeVisible();
