@@ -1,8 +1,28 @@
+# dependencies and build output
 node_modules
 .next
+coverage
+test-results
+playwright-report
+
+# local data and logs
 *.db
 *.db-*
 *.log
-.env.local
-test-results
-playwright-report
+.oldsrc
+
+# secrets: never commit. Only *.example templates are tracked.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea
+.vscode
