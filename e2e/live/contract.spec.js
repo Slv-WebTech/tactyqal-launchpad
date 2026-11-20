@@ -1,11 +1,12 @@
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 
 // Read-only contract check of the DEPLOYED API against docs/openapi.json (same schemas the unit-level contract test uses).
 const API = process.env.LIVE_API || "https://tactyqal-launchpad-api.onrender.com/api";
-const spec = JSON.parse(readFileSync(new URL("../../docs/openapi.json", import.meta.url), "utf8"));
+const spec = JSON.parse(readFileSync(join(__dirname, "../../docs/openapi.json"), "utf8"));
 const ajv = new Ajv2020({ strict: false, allErrors: true });
 addFormats(ajv);
 ajv.addSchema({ $id: "spec", components: spec.components });
