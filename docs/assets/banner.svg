@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 360" role="img" aria-label="Tactyqal Labs: from idea to launched app in 8 weeks">
+  <title>Tactyqal Labs: from idea to launched app in 8 weeks</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#455230"/>
+      <stop offset="0.55" stop-color="#3b4729"/>
+      <stop offset="1" stop-color="#2f3920"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="0.85" cy="0.1" r="0.6">
+      <stop offset="0" stop-color="#9BA685" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#9BA685" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="0.05" cy="1" r="0.55">
+      <stop offset="0" stop-color="#637545" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#637545" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="word" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#EBEBD8"/>
+      <stop offset="1" stop-color="#9BA685"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#637545"/>
+      <stop offset="1" stop-color="#455230"/>
+    </linearGradient>
+    <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.2" fill="#EBEBD8" opacity="0.10"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="360" fill="url(#bg)"/>
+  <rect width="1280" height="360" fill="url(#dots)"/>
+  <rect width="1280" height="360" fill="url(#glowA)"/>
+  <rect width="1280" height="360" fill="url(#glowB)"/>
+  <!-- decorative rings -->
+  <g fill="none" stroke="#9BA685" stroke-opacity="0.25">
+    <circle cx="1090" cy="120" r="150"/>
+    <circle cx="1090" cy="120" r="108"/>
+    <circle cx="1090" cy="120" r="66"/>
+  </g>
+  <!-- logo mark -->
+  <g transform="translate(80,86)">
+    <rect width="104" height="104" rx="26" fill="url(#mark)" stroke="#EBEBD8" stroke-opacity="0.35" stroke-width="2"/>
+    <path d="M29 31h46v11H57v35H46V42H29z" fill="#EBEBD8"/>
+    <circle cx="78" cy="24" r="6.5" fill="#9BA685"/>
+  </g>
+  <g font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">
+    <text x="218" y="150" font-size="68" font-weight="800" fill="url(#word)" letter-spacing="-2">Tactyqal Labs</text>
+    <text x="220" y="196" font-size="27" fill="#EBEBD8" opacity="0.92">From idea to launched app, in 8 weeks.</text>
+    <!-- chips -->
+    <g font-size="17" font-weight="600">
+      <rect x="220" y="232" width="150" height="38" rx="19" fill="#EBEBD8" fill-opacity="0.12" stroke="#EBEBD8" stroke-opacity="0.35"/>
+      <text x="295" y="257" text-anchor="middle" fill="#EBEBD8">Next.js 16</text>
+      <rect x="384" y="232" width="190" height="38" rx="19" fill="#EBEBD8" fill-opacity="0.12" stroke="#EBEBD8" stroke-opacity="0.35"/>
+      <text x="479" y="257" text-anchor="middle" fill="#EBEBD8">Express + SQLite</text>
+      <rect x="588" y="232" width="150" height="38" rx="19" fill="#EBEBD8" fill-opacity="0.12" stroke="#EBEBD8" stroke-opacity="0.35"/>
+      <text x="663" y="257" text-anchor="middle" fill="#EBEBD8">WCAG AA</text>
+      <rect x="752" y="232" width="170" height="38" rx="19" fill="#9BA685" fill-opacity="0.35" stroke="#9BA685"/>
+      <text x="837" y="257" text-anchor="middle" fill="#EBEBD8">100+ tests</text>
+    </g>
+  </g>
+</svg>

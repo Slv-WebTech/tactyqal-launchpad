@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 96" role="img" aria-label="Tactyqal Labs">
+  <title>Tactyqal Labs</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#637545"/>
+      <stop offset="1" stop-color="#455230"/>
+    </linearGradient>
+  </defs>
+  <rect width="96" height="96" rx="24" fill="url(#bg)"/>
+  <circle cx="72" cy="22" r="12" fill="#9BA685" opacity=".35"/>
+  <path d="M27 29h42v10H53v32H43V39H27z" fill="#EBEBD8"/>
+  <circle cx="72" cy="22" r="6" fill="#9BA685"/>
+  <text x="116" y="62" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="44" font-weight="800" fill="#455230" letter-spacing="-1">Tactyqal<tspan fill="#637545">Labs</tspan></text>
+</svg>
