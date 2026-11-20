@@ -24,6 +24,7 @@
 ![SQLite](https://img.shields.io/badge/SQLite-node%3Asqlite-455230?style=flat-square&logo=sqlite&logoColor=EBEBD8)
 ![Playwright](https://img.shields.io/badge/Playwright-e2e%20%2B%20visual-455230?style=flat-square&logo=playwright&logoColor=EBEBD8)
 ![WCAG](https://img.shields.io/badge/WCAG-2.1%20AA-637545?style=flat-square)
+[![License: MIT](https://img.shields.io/badge/license-MIT-9BA685?style=flat-square)](LICENSE)
 ![Tests](https://img.shields.io/badge/tests-135%20automated-637545?style=flat-square)
 ![Vulnerabilities](https://img.shields.io/badge/npm%20audit-0%20vulnerabilities-637545?style=flat-square)
 
@@ -195,6 +196,12 @@ Backend: deep pagination went from 2.3 s to ~45 ms per request under load after 
 - **Frontend (Vercel):** root `frontend`, env `NEXT_PUBLIC_API_URL=https://<api-host>/api` (optional `NEXT_PUBLIC_SITE_URL`).
 - **API (Render / Railway / Fly):** root `backend`, build `npm install`, start `npm start`, Node ≥ 22.5. Set `ADMIN_KEY` (≥ 24 random chars, e.g. `openssl rand -base64 32`) and `NODE_ENV=production`. Use `/api/ready` as the health check. For persistence mount a disk and set `DB_FILE`, or move to PostgreSQL.
 
+## 📄 License
+
+The source code in this repository is released under the [MIT License](LICENSE) © 2026 Vivek Sharma.
+
+The licence covers the **code** only. The Tactyqal Labs name, logo-related marketing copy, programme descriptions, pricing and testimonials are derived from the company's own website and remain their property; they are included here as sample content for the hire-a-thon and are not relicensed.
+
 ## 🤝 Contributing
 
 Branch from `main`, use [Conventional Commits](https://www.conventionalcommits.org/), keep tests green, and open a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -202,5 +209,5 @@ Branch from `main`, use [Conventional Commits](https://www.conventionalcommits.o
 ---
 
 <div align="center">
-<sub>Built for the Tactyqal Labs Fullstack Developer Intern hire-a-thon · sage · olive · forest · cream<br/>No open-source licence has been granted yet; all rights reserved by the author.</sub>
+<sub>Built for the Tactyqal Labs Fullstack Developer Intern hire-a-thon · sage · olive · forest · cream<br/>Code licensed under MIT.</sub>
 </div>
