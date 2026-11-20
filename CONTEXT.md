@@ -33,7 +33,7 @@ Data model: `posts` (slug unique, status `draft|published`, ISO timestamps, inte
 | `additionalProperties: false` in OpenAPI response schemas | Leaking an internal column fails the build |
 | Four-colour palette, neutral scale remapped in `globals.css` | One block controls the brand; contrast verified (axe + script) |
 | Visual diff threshold `0.05` / `0.1 %` | At `0.2` a same-brightness colour change passed (mutation-checked) |
-| Playwright e2e uses ports **4100/3500** | Windows reserves 3071–3170 on some machines |
+| Playwright e2e uses ports **4100/3500/3501** (3501 = a second build whose API is deliberately unreachable) | Windows reserves 3071–3170 on some machines |
 | Live tests are throttled and read-only | Heavy automated traffic made Vercel challenge the tester's IP |
 
 ## 4. Environments and configuration
@@ -54,7 +54,7 @@ Data model: `posts` (slug unique, status `draft|published`, ISO timestamps, inte
 ```bash
 cd backend  && npm test                     # 45 tests incl. contract + fuzz  (FUZZ_SEED, FUZZ_N)
 cd frontend && npm test && npm run build    # 7 tests + production build
-cd e2e && npx playwright test               # 64 tests (builds the app, boots both servers on a fresh DB)
+cd e2e && npx playwright test               # 72 tests (builds the app, boots both servers on a fresh DB)
 cd e2e && npx playwright test visual --update-snapshots   # only after an intended UI change
 cd e2e && node scripts/generate-brand-assets.mjs          # regenerate icons, social cards, screenshots
 ```
@@ -64,19 +64,18 @@ Conventions: Conventional Commits, PRs into `main`, tests required for behaviour
 ## 6. Current state (2026-11-20)
 
 - ✅ Frontend live at https://tactyqal-launchpad.vercel.app; API live at https://tactyqal-launchpad-api.onrender.com/api (writes locked with an admin key).
-- ✅ Tests: backend 45, frontend 7, local browser 64 (36 functional, 12 accessibility, 16 visual), live site 52, live API 19. `npm audit`: 0 vulnerabilities.
+- ✅ Tests: backend 45, frontend 7, local browser 72 (36 functional, 12 accessibility, 16 visual, 8 API-down), live site 52, live API 19. `npm audit`: 0 vulnerabilities.
 - ✅ SEO/social metadata, manifest, robots, sitemap, favicon set, Open Graph card.
 - ✅ Render runs the latest API code (deployed 2026-11-20). Verified live: malformed percent-encoding that reaches the app returns a JSON `400`. Some forms (`%ZZ`, `%00`, trailing `%`) are rejected earlier by Cloudflare/Render's edge (HTML `400` or `520`), which the app cannot influence.
-- ⚠️ Free tier: ~50 s cold start; SQLite resets on restart, so hosted posts are not durable.
+- ⚠️ Free tier: ~50 s cold start (visitors now see a friendly auto-retrying "waking up" card, not developer text); SQLite resets on restart, so hosted posts are not durable.
 
 ## 7. Known issues and backlog (priority order)
 
-1. End-user copy: the home/blog pages show developer text ("Start the blog API…") when the API is asleep. Replace with friendly copy + retry.
-2. API: rate limiting, `helmet`/CSP, `cover_image` must be an http(s) URL.
-3. Concurrency & retries: `ETag`/`If-Match`, `Idempotency-Key`, slug redirect history.
-4. Scale: PostgreSQL, FTS (`tsvector`/FTS5), keyset pagination.
-5. Test depth: Firefox/WebKit projects, Stryker mutation testing (≥ 70 % on `app.js`), k6 load job, Linux visual baselines in CI.
-6. Marketing copy review ("results guaranteed", "guaranteed admission").
+1. API: rate limiting, `helmet`/CSP, `cover_image` must be an http(s) URL.
+2. Concurrency & retries: `ETag`/`If-Match`, `Idempotency-Key`, slug redirect history.
+3. Scale: PostgreSQL, FTS (`tsvector`/FTS5), keyset pagination.
+4. Test depth: Firefox/WebKit projects, Stryker mutation testing (≥ 70 % on `app.js`), k6 load job, Linux visual baselines in CI.
+5. Marketing copy review ("results guaranteed", "guaranteed admission").
 
 Full reasoning and measured numbers: [`docs/BACKEND_AUDIT.md`](docs/BACKEND_AUDIT.md), [`docs/QA_REPORT.md`](docs/QA_REPORT.md).
 

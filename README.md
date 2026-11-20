@@ -25,7 +25,7 @@
 ![Playwright](https://img.shields.io/badge/Playwright-e2e%20%2B%20visual-455230?style=flat-square&logo=playwright&logoColor=EBEBD8)
 ![WCAG](https://img.shields.io/badge/WCAG-2.1%20AA-637545?style=flat-square)
 [![License: MIT](https://img.shields.io/badge/license-MIT-9BA685?style=flat-square)](LICENSE)
-![Tests](https://img.shields.io/badge/tests-135%20automated-637545?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-143%20automated-637545?style=flat-square)
 ![Vulnerabilities](https://img.shields.io/badge/npm%20audit-0%20vulnerabilities-637545?style=flat-square)
 
 [**Live demo**](https://tactyqal-launchpad.vercel.app) · [**API**](https://tactyqal-launchpad-api.onrender.com/api/posts) · [**Docs**](#-documentation) · [**Project status**](#-project-status) · [**Report a bug**](https://github.com/Slv-WebTech/tactyqal-launchpad/issues/new/choose)
@@ -143,7 +143,7 @@ Report a vulnerability privately: see [SECURITY.md](SECURITY.md).
 |---|---|---|
 | API unit · edge · hardening · **OpenAPI contract** · **fuzz** | `cd backend && npm test` | 45 · 98.6 % lines · 95 % branches |
 | Renderer unit | `cd frontend && npm test` | 7 · 100 % |
-| E2E functional · **axe WCAG A/AA** · **visual regression** | `cd e2e && npx playwright test` | 64 |
+| E2E functional · **axe WCAG A/AA** · **visual regression** · **API-down experience** | `cd e2e && npx playwright test` | 72 |
 | Live site (read-only) | `npx playwright test -c live-site.config.js` | 52 |
 | Live API smoke + contract | `npx playwright test -c live.config.js` | 19 |
 | Core Web Vitals + payload budgets | `node perf/vitals.mjs` | 8 page profiles |
@@ -167,6 +167,7 @@ Backend: deep pagination went from 2.3 s to ~45 ms per request under load after 
 | Area | Status |
 |---|---|
 | Homepage redesign | ✅ Done, deployed |
+| Friendly "blog is waking up" state when the API sleeps (auto-retry, no developer text) | ✅ Done |
 | Blog API + admin UI | ✅ Done, deployed; writes locked down with an admin key |
 | Accessibility, visual and e2e suites | ✅ Done |
 | OpenAPI contract + fuzzing | ✅ Done |

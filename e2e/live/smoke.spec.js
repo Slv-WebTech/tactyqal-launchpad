@@ -111,7 +111,7 @@ test.describe("live site", () => {
   test("admin page loads its post list from the live API (no writes)", async ({ page }) => {
     await page.goto("/admin");
     await expect(page.locator("ul.divide-y li").first()).toBeVisible();
-    await expect(page.getByText(/Cannot reach the API/)).toHaveCount(0);
+    await expect(page.getByText(/couldn't reach the blog service/)).toHaveCount(0);
   });
 
   test("favicon served and all internal links resolve", async ({ page, request }) => {

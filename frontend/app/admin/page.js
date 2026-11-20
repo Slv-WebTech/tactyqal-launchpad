@@ -18,7 +18,7 @@ export default function Admin() {
       const json = await r.json();
       setPosts(json.data || []);
     } catch {
-      setMsg({ err: true, text: "Cannot reach the API. Is the backend running?" });
+      setMsg({ err: true, text: "We couldn't reach the blog service. It may be waking up: wait a minute and reload." });
     }
   }, [key]);
   useEffect(() => { load(); }, [load]);

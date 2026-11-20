@@ -193,7 +193,7 @@ test.describe("resilience", () => {
   test("admin shows a clear error when the API is unreachable", async ({ page }) => {
     await page.route(`${API}/**`, (r) => r.abort());
     await page.goto("/admin");
-    await expect(page.getByText(/Cannot reach the API/)).toBeVisible();
+    await expect(page.getByText(/couldn't reach the blog service/)).toBeVisible();
   });
 
   test("admin surfaces server validation errors instead of failing silently", async ({ page }) => {

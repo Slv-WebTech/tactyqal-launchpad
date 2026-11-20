@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPost, fmtDate } from "@/lib/api";
+import ApiRetry from "@/components/ApiRetry";
 import { renderMarkdown } from "@/lib/markdown";
 
 export async function generateMetadata({ params }) {
-  const post = await getPost((await params).slug);
+  const { post, offline } = await getPost((await params).slug);
+  if (offline) return { title: "Loading article" };
   if (!post || post.status !== "published") return { title: "Post not found" };
   return {
     title: post.title,
@@ -15,7 +17,17 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function PostPage({ params }) {
-  const post = await getPost((await params).slug);
+  const { post, offline } = await getPost((await params).slug);
+  if (offline) {
+    // API asleep or unreachable: show a retry state, never a misleading "not found"
+    return (
+      <div className="mx-auto max-w-3xl px-5 py-14">
+        <Link href="/blog" className="text-sm font-semibold text-brand-dark">← All articles</Link>
+        <h1 className="mt-4 text-3xl font-extrabold text-ink">Loading your article</h1>
+        <div className="mt-8"><ApiRetry title="Fetching the article" /></div>
+      </div>
+    );
+  }
   if (!post || post.status !== "published") notFound();
   return (
     <article className="mx-auto max-w-3xl px-5 py-14">
