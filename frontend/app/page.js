@@ -68,7 +68,7 @@ export default async function Home() {
           </div>
           <dl className="mt-14 grid max-w-xl grid-cols-3 gap-6">
             {[["100+", "Students mentored"], ["8 wks", "Idea to launch"], ["1:1", "Live sessions"]].map(([n, l]) => (
-              <div key={l}><dt className="text-3xl font-extrabold">{n}</dt><dd className="text-sm text-white/70">{l}</dd></div>
+              <div key={l}><dt className="text-3xl font-extrabold">{n}</dt><dd className="text-sm text-white/90">{l}</dd></div>
             ))}
           </dl>
         </div>

@@ -30,7 +30,7 @@ export default async function BlogIndex({ searchParams }) {
       </div>
       {offline && <p className="mt-8 rounded-lg bg-amber-50 p-4 text-sm text-amber-800">Blog API unreachable. Start it with <code>npm start</code> in /backend.</p>}
       {!offline && !data.length && <p className="mt-10 text-slate-500">No articles found.</p>}
-      <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{data.map((p) => <PostCard key={p.id} post={p} />)}</div>
+      <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{data.map((p) => <PostCard key={p.id} post={p} as="h2" />)}</div>
       {meta.pages > 1 && (
         <div className="mt-10 flex items-center justify-center gap-4 text-sm">
           {page > 1 && <Link className="font-semibold text-brand-dark" href={link({ page: page - 1 })}>← Newer</Link>}

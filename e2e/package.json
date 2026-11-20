@@ -1,6 +1,13 @@
 {
   "name": "tactyqal-e2e",
   "private": true,
-  "scripts": { "test": "playwright test" },
-  "devDependencies": { "@playwright/test": "^1.49.0" }
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.49.0",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
+  }
 }

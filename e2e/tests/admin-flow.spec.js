@@ -120,6 +120,11 @@ test.describe("security: stored XSS cannot execute anywhere", () => {
 });
 
 test.describe("scale & content edge cases", () => {
+  test.afterEach(async ({ request }) => {
+    const all = await (await request.get(`${API}/posts?status=all&limit=50`)).json();
+    for (const p of all.data) if (/^(Paging \d+|Supercalifragilistic|नमस्ते|Bare minimum|XSS)/.test(p.title)) await request.delete(`${API}/posts/${p.id}`);
+  });
+
   test("pagination across pages with > page-size posts, no duplicates, next/prev links", async ({ page, request }) => {
     const ids = [];
     for (let i = 1; i <= 8; i++) {
@@ -130,11 +135,11 @@ test.describe("scale & content edge cases", () => {
     await expect(page.locator("main a[href^='/blog/']")).toHaveCount(6);
     await expect(page.getByText("Page 1 of 2")).toBeVisible();
     await expect(page.getByRole("link", { name: /Newer/ })).toHaveCount(0);
-    const first = await page.locator("main h3").allTextContents();
+    const first = await page.locator("main a[href^='/blog/'] h2").allTextContents();
     await page.getByRole("link", { name: /Older/ }).click();
     await expect(page.getByText("Page 2 of 2")).toBeVisible();
     await expect(page.locator("main a[href^='/blog/']")).toHaveCount(2);
-    const second = await page.locator("main h3").allTextContents();
+    const second = await page.locator("main a[href^='/blog/'] h2").allTextContents();
     expect(new Set([...first, ...second]).size).toBe(8);
     await expect(page.getByRole("link", { name: /Older/ })).toHaveCount(0);
     await page.getByRole("link", { name: /Newer/ }).click();

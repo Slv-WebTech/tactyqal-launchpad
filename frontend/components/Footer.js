@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="bg-ink text-white/75">
       <div className="mx-auto grid max-w-6xl gap-8 px-5 py-12 md:grid-cols-3">
         <div>
-          <p className="text-lg font-extrabold text-white">Tactyqal<span className="text-accent">Labs</span></p>
+          <p className="text-lg font-extrabold text-white">Tactyqal<span className="font-semibold text-white/80">Labs</span></p>
           <p className="mt-3 max-w-xs text-sm">Turning young builders' ideas into launched products.</p>
         </div>
         <div className="text-sm">

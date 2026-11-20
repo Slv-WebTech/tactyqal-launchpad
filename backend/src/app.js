@@ -188,6 +188,8 @@ export function createApp(db, config = loadConfig()) {
   app.use((err, _req, res, _next) => {
     if (err.type === "entity.parse.failed") return res.status(400).json({ error: "Invalid JSON body" });
     if (err.type === "entity.too.large") return res.status(413).json({ error: "Request body too large" });
+    // malformed percent-encoding in the URL (e.g. /posts/%E0%A4%A) is a client error, not a server fault
+    if (err instanceof URIError || (err.status === 400 && err.expose)) return res.status(400).json({ error: "Malformed request URL" });
     if (/UNIQUE constraint failed: posts\.slug/.test(err.message || "")) return res.status(409).json({ error: "A post with this slug already exists" });
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
