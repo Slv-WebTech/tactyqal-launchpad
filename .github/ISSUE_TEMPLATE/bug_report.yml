@@ -1,0 +1,43 @@
+name: Bug report
+description: Something is broken or behaves unexpectedly
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: "Please **do not** paste secrets, keys or tokens. For security issues use the private advisory form instead."
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Website (frontend)
+        - Blog API
+        - Admin page
+        - Tests / CI
+        - Docs
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: "What happened, and what did you expect instead?"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Go to ...\n2. Click ..."
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Browser, OS and URL
+      placeholder: "Chrome on Windows 11, https://tactyqal-launchpad.vercel.app/blog"
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots, logs or response bodies
+      description: Redact anything sensitive.

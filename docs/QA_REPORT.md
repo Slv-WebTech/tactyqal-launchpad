@@ -2,6 +2,8 @@
 
 Tested 20 Nov 2026. Build: commit `266ed63` (frontend on Vercel, API on Render). Environment: Windows, Chrome. All numbers below are from runs executed in this session.
 
+> **Status update (2026-11-20):** documentation, brand assets, SEO metadata and repository governance (CI, templates, ruleset) were added after this report. Test counts here are still accurate; see [CONTEXT.md](../CONTEXT.md) for the current state and [CHANGELOG.md](../CHANGELOG.md) for history.
+
 ## 1. Executive summary
 
 **Verdict: ship-ready for a hiring demo, with one open production item.** The deployed API still runs code from before today's fix: a malformed URL such as `/posts/%E0%A4%A` returns 520 (Cloudflare error) instead of 400. The fix is committed and tested; Render needs one manual deploy (my deploy click was blocked by the permission system, so it is not done).

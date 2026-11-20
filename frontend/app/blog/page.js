@@ -2,7 +2,10 @@ import Link from "next/link";
 import PostCard from "@/components/PostCard";
 import { getPosts, getTags } from "@/lib/api";
 
-export const metadata = { title: "Blog — Tactyqal Labs" };
+export const metadata = {
+  title: "Blog",
+  description: "Practical advice for young founders: pitching, building a team, validating ideas and no-code app ideas.",
+};
 
 export default async function BlogIndex({ searchParams }) {
   const sp = await searchParams;

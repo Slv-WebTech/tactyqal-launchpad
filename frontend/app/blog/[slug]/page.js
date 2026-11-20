@@ -5,7 +5,13 @@ import { renderMarkdown } from "@/lib/markdown";
 
 export async function generateMetadata({ params }) {
   const post = await getPost((await params).slug);
-  return { title: post ? `${post.title} — Tactyqal Labs` : "Post not found" };
+  if (!post || post.status !== "published") return { title: "Post not found" };
+  return {
+    title: post.title,
+    description: post.excerpt || undefined,
+    alternates: { canonical: `/blog/${post.slug}` },
+    openGraph: { type: "article", title: post.title, description: post.excerpt || undefined, publishedTime: post.published_at || undefined, authors: [post.author], tags: post.tags },
+  };
 }
 
 export default async function PostPage({ params }) {
