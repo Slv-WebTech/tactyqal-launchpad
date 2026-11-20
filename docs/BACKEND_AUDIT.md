@@ -1,5 +1,7 @@
 # Backend Audit — Tactyqal Blog API
 
+> **Status (2026-11-20):** the High/Critical findings (S1 auth, P1 list performance, L1 transactions) are fixed and verified; see **Fix status (applied)** below. Later work added the OpenAPI contract and fuzzing (`docs/QA_REPORT.md`). Remaining items are tracked in [CONTEXT.md](../CONTEXT.md#7-known-issues-and-backlog-priority-order).
+
 Scope: `backend/src/app.js`, `db.js`, `server.js` (Express 4 + `node:sqlite`), plus the live deployment on Render.
 Method: code review **plus measurements**. Every finding is tagged **[verified]** (reproduced by a script against the real code or the live API) or **[reasoned]** (follows from the code but not triggered). Numbers come from a 5,000–20,000-row in-memory dataset on a laptop; treat them as relative, not absolute.
 
