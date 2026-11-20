@@ -1,0 +1,5 @@
+# Every change needs review from the maintainer; sensitive areas are listed explicitly.
+*                       @Slv-WebTech
+/backend/src/           @Slv-WebTech
+/.github/               @Slv-WebTech
+/docs/openapi.json      @Slv-WebTech
