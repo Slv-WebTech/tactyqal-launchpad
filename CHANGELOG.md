@@ -15,9 +15,6 @@ All notable changes to this project. Format follows [Keep a Changelog](https://k
 ### Changed
 - Page titles use a template (`%s | Tactyqal Labs`).
 
-### Pending
-- Render API needs a manual deploy of the latest commit (adds the `400` for malformed URL encoding).
-
 ## [1.4.0] - 2026-11-20: QA hardening
 
 ### Added

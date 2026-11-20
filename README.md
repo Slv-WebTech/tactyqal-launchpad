@@ -171,7 +171,7 @@ Backend: deep pagination went from 2.3 s to ~45 ms per request under load after 
 | Accessibility, visual and e2e suites | ✅ Done |
 | OpenAPI contract + fuzzing | ✅ Done |
 | SEO / social metadata, icons, manifest | ✅ Done |
-| Render API runs the latest commit | ⏳ **Pending a manual deploy** (adds the malformed-URL `400` fix) |
+| Render API runs the latest API code | ✅ Deployed 2026-11-20 (malformed-URL `400` fix verified live) |
 | GitHub Actions CI (Backend · Frontend · E2E · Security) | ✅ Done |
 | Rate limiting, API security headers, `cover_image` validation | 🔜 Planned |
 | Idempotency keys, edit-conflict detection, full-text search, PostgreSQL | 🔜 Planned (see audit) |
