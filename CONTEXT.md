@@ -81,6 +81,10 @@ Conventions: Conventional Commits, PRs into `main`, tests required for behaviour
 
 Full reasoning and measured numbers: [`docs/BACKEND_AUDIT.md`](docs/BACKEND_AUDIT.md), [`docs/QA_REPORT.md`](docs/QA_REPORT.md).
 
-## 8. Glossary
+## 8. License
+
+MIT (see `LICENSE`), code only. The Tactyqal Labs name and marketing content come from the company's site and are not relicensed.
+
+## 9. Glossary
 
 **Closed by default**: writes disabled unless explicitly enabled. **Contract test**: validates every API response against `docs/openapi.json`. **Visual baseline**: committed reference screenshot in `e2e/tests/visual.spec.js-snapshots/`. **Live suite**: read-only checks against production.
