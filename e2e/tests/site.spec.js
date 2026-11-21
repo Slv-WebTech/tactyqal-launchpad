@@ -37,10 +37,10 @@ test.describe("homepage", () => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/");
     await expect(page.locator("header details")).toBeHidden();
-    await page.locator("header nav a", { hasText: "Pricing" }).click();
+    await page.locator('header nav a[aria-label="Pricing"]').click();
     await expect(page).toHaveURL(/#pricing$/);
     await expect(page.locator("section#pricing")).toBeInViewport();
-    await page.locator("header nav a", { hasText: "FAQ" }).click();
+    await page.locator('header nav a[aria-label="FAQ"]').click();
     await expect(page.locator("section#faq")).toBeInViewport();
   });
 
@@ -135,7 +135,7 @@ test.describe("blog", () => {
     const n = await page.locator("main a[href^='/blog/']").count();
     expect(n).toBeGreaterThan(0);
     expect(n).toBeLessThan(6);
-    await page.getByRole("link", { name: "All", exact: true }).click();
+    await page.getByRole("link", { name: "All articles" }).click();
     await expect(page.locator("main a[href^='/blog/']")).toHaveCount(6);
   });
 
@@ -168,8 +168,8 @@ test.describe("blog", () => {
     await page.locator("main a[href^='/blog/']").first().click();
     await expect(page.locator("article h1")).toBeVisible();
     await expect(page.locator("article .prose-post h2").first()).toBeVisible();
-    await expect(page.locator("article")).toContainText("min read");
-    await page.getByRole("link", { name: "← All articles" }).click();
+    await expect(page.locator("article")).toContainText("min");
+    await page.getByRole("link", { name: "All articles" }).first().click();
     await expect(page).toHaveURL(/\/blog$/);
   });
 

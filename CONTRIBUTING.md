@@ -24,6 +24,10 @@ cd e2e      && npm ci && npx playwright test          # functional + accessibili
 - UI changes: run the visual suite; if the change is intended, `npx playwright test visual --update-snapshots` and review the image diffs in the PR. Zero new axe violations.
 - New write paths must be covered by the closed-by-default auth tests.
 
+## UI rule: icon-first
+
+Controls are icons with a tooltip. Use `components/IconAction.js` (`<IconAction label="Edit" icon={<Pencil />} />`): it sets the `aria-label`, the tooltip and `aria-hidden` on the icon for you. Keep a visible text label on primary calls to action and in touch-first menus. Never add an icon-only control without a label; `e2e/tests/icons.spec.js` fails the build if you do.
+
 ## Security and secrets
 
 - **Never commit** keys, tokens, passwords, `.env` files, database files or screenshots showing them. Use environment variables; document names (not values) in `.env.example`.

@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { BookOpen, IndianRupee, Settings, Mail, Phone, Clock } from "lucide-react";
+import IconAction from "./IconAction";
 
 export default function Footer() {
   return (
@@ -8,18 +9,20 @@ export default function Footer() {
           <p className="text-lg font-extrabold text-white">Tactyqal<span className="font-semibold text-white/80">Labs</span></p>
           <p className="mt-3 max-w-xs text-sm">Turning young builders' ideas into launched products.</p>
         </div>
-        <div className="text-sm">
+        <nav aria-label="Footer" className="text-sm">
           <p className="mb-3 font-semibold text-white">Explore</p>
-          <ul className="space-y-2">
-            <li><Link href="/blog" className="hover:text-white">Blog</Link></li>
-            <li><Link href="/#pricing" className="hover:text-white">Pricing</Link></li>
-            <li><Link href="/admin" className="hover:text-white">Blog admin</Link></li>
-          </ul>
-        </div>
+          <div className="flex gap-1">
+            <IconAction label="Blog" href="/blog" icon={<BookOpen />} variant="onDark" side="top" />
+            <IconAction label="Pricing" href="/#pricing" icon={<IndianRupee />} variant="onDark" side="top" />
+            <IconAction label="Blog admin" href="/admin" icon={<Settings />} variant="onDark" side="top" />
+          </div>
+        </nav>
         <div className="text-sm">
           <p className="mb-3 font-semibold text-white">Contact</p>
           <ul className="space-y-2">
-            <li>tactyqal.labs@gmail.com</li><li>+91-98047-72106</li><li>Mon–Sat, 9am–7pm</li>
+            <li className="flex items-center gap-2"><Mail aria-hidden="true" className="h-4 w-4 shrink-0" /><span className="sr-only">Email: </span>tactyqal.labs@gmail.com</li>
+            <li className="flex items-center gap-2"><Phone aria-hidden="true" className="h-4 w-4 shrink-0" /><span className="sr-only">Phone: </span>+91-98047-72106</li>
+            <li className="flex items-center gap-2"><Clock aria-hidden="true" className="h-4 w-4 shrink-0" /><span className="sr-only">Hours: </span>Mon–Sat, 9am–7pm</li>
           </ul>
         </div>
       </div>
