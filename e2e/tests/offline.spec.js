@@ -31,7 +31,7 @@ test.describe("API asleep or unreachable", () => {
     await expect(page.locator("h1")).toHaveText("Loading your article");
     await expect(page.locator("[role=status]")).toContainText("Fetching the article");
     await expect(page.getByText("Page not found")).toHaveCount(0);
-    await expect(page.getByRole("link", { name: /All articles/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: "All articles" })).toBeVisible();
     await expect(page).toHaveTitle(/Loading article/);
   });
 

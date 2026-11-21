@@ -31,8 +31,9 @@ for (const [vp, w, h] of VIEWPORTS) {
 test("visual: interactive states (nav hover, open FAQ, open mobile menu)", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  await page.locator("header nav a", { hasText: "Pricing" }).hover();
-  await expect(page.locator("header")).toHaveScreenshot("state-nav-hover.png", { maxDiffPixelRatio: 0.001, threshold: 0.05 });
+  await page.locator('header nav a[aria-label="Pricing"]').hover();
+  // clip includes the tooltip that hangs below the header
+  await expect(page).toHaveScreenshot("state-nav-hover.png", { clip: { x: 640, y: 0, width: 340, height: 110 }, maxDiffPixelRatio: 0.001, threshold: 0.05 });
   await page.locator("#faq details").first().locator("summary").click();
   await expect(page.locator("#faq")).toHaveScreenshot("state-faq-open.png", { maxDiffPixelRatio: 0.001, threshold: 0.05 });
   await page.setViewportSize({ width: 375, height: 812 });
