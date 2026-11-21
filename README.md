@@ -157,7 +157,7 @@ Report a vulnerability privately: see [SECURITY.md](SECURITY.md).
 | API unit · edge · hardening · **OpenAPI contract** · **fuzz** | `cd backend && npm test` | 45 · 98.6 % lines · 95 % branches |
 | Renderer unit | `cd frontend && npm test` | 7 · 100 % |
 | E2E functional · **axe WCAG A/AA** · **visual regression** · **API-down experience** · **icon-first audit** | `cd e2e && npx playwright test` | 91 |
-| Live site (read-only) | `npx playwright test -c live-site.config.js` | 52 |
+| Live site (read-only) | `npx playwright test -c live-site.config.js` | 68 |
 | Live API smoke + contract | `npx playwright test -c live.config.js` | 19 |
 | Core Web Vitals + payload budgets | `node perf/vitals.mjs` | 8 page profiles |
 
