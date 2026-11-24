@@ -16,7 +16,7 @@ Tested 20 Nov 2026. Build: commit `266ed63` (frontend on Vercel, API on Render).
 | Live site (browser) | 51/52 pass; the 1 failure is traffic mitigation from Vercel (see section 6) |
 | Live API contract | 2/3 pass; failure = the undeployed fix above |
 | Dependency audit | 0 vulnerabilities (backend, frontend, e2e) |
-| Performance (live, mobile 4x CPU + 4G) | LCP 1.0–1.3 s, CLS 0, ~155 KB per page |
+| Performance (live, mobile 4x CPU + 4G) | LCP 1.1–1.4 s, CLS 0, ~170 KB per page (re-measured 2026-11-24, after the icon-first UI) |
 
 Defects found and fixed this round: 1 API bug, 7 accessibility defects, 1 weak test threshold, 1 test-pollution cascade. Earlier rounds fixed 7 more (draft leakage, numeric-slug collision, non-atomic writes, deep-pagination slowness, and others).
 
@@ -43,8 +43,8 @@ Covered by 26 edge-case tests: slug generation (unicode, numeric, symbols, colli
 
 ## 5. Performance
 
-- **Frontend (live, median of 5 cold runs, mobile profile):** TTFB 220–330 ms, FCP/LCP 1.0–1.3 s, CLS 0.000, TBT 0–152 ms, 9–19 requests, 154–160 KB (140 KB is framework JS). Desktop LCP 0.4–1.1 s. All inside the budget I set (LCP ≤ 2.5 s, CLS ≤ 0.1, TBT ≤ 200 ms, ≤ 400 KB). Watch item: mobile home TBT 152 ms is close to the cap.
-- **Backend:** list queries no longer read post bodies and use a covering index; tags load in one query; statements are prepared once. Deep page (page 400, 5,000 posts, 50 concurrent): 2.3 s → ~45 ms per request, 4 → ~210 req/s. Direct SQL at 20,000 rows: 237 ms → 0.03 ms with keyset pagination (offset version: 0.8 ms). Single-post lookups unchanged (4.5–4.9 µs vs 5.1–5.3 µs).
+- **Frontend (live, median of 5 cold runs, mobile profile):** first measured 2026-11-20: TTFB 220–330 ms, FCP/LCP 1.0–1.3 s, CLS 0.000, TBT 0–152 ms, 9–19 requests, 154–160 KB (140 KB is framework JS). **Re-measured 2026-11-24, after the icon-first UI (PR #15):** TTFB 237–327 ms, LCP 1.08–1.52 s (home 1.42, blog 1.38, post 1.08, admin 1.52), CLS 0.000, TBT 317–410 ms on the public pages and 1,449 ms on /admin, 10–22 requests, 163–176 KB. Desktop LCP 0.39–1.02 s. LCP, CLS and weight are inside the budget (LCP ≤ 2.5 s, CLS ≤ 0.1, ≤ 400 KB); **mobile TBT is now above the 200 ms cap**, so `perf/vitals.mjs` exits non-zero for the mobile profiles. Server-rendering the tooltips (no hydrated React component per icon) and replacing the hero blur with gradients were tried and did not change LCP or TBT beyond run-to-run noise, so they were not shipped.
+- **Backend:** list queries no longer read post bodies and use a covering index; tags load in one query; statements are prepared once. Deep page (page 400, 5,000 posts, **10 concurrent clients**, re-measured 2026-11-24 against the pre-fix commit): p50 ≈ 3.2 s → ≈ 43 ms, 3 → 170–230 req/s (the earlier "50 concurrent" label did not match those figures: at 50 clients the current code gives ≈ 210 req/s and p50 ≈ 230 ms). Direct SQL at 20,000 rows: 237 ms → 0.03 ms with keyset pagination (offset version: 0.8 ms). Single-post lookups unchanged (4.5–4.9 µs vs 5.1–5.3 µs).
 - **Not done:** k6 load test (script is in the audit doc, not run), memory/soak profiling.
 
 ## 6. User experience feedback

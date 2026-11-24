@@ -586,7 +586,7 @@ Run it as three passes: (1) **baseline** on one instance to find the knee; (2) *
 | Finding | Status | Evidence |
 |---|---|---|
 | S1 fail-open auth | **Fixed: closed by default.** No `ADMIN_KEY` = every write returns 401 and drafts are hidden; open writes only via explicit `ALLOW_OPEN_WRITES=1` (refused in production); keys must be >=24 chars; constant-time compare. Deploying this commit locks the live API even with no dashboard variables | `hardening.test.js` (auth, config); live canary in `e2e/live/smoke.spec.js` |
-| P1 list query / deep pages | **Fixed** (`sort_at` ISO column, `idx_posts_list`, no `content` read in lists, auto-migration for old DBs) | deep page (page 400, 5k posts): **p50 2.3 s -> ~45 ms, 4 -> ~210 req/s**; plan test: no temp B-tree |
+| P1 list query / deep pages | **Fixed** (`sort_at` ISO column, `idx_posts_list`, no `content` read in lists, auto-migration for old DBs) | deep page (page 400, 5k posts, 10 concurrent clients; re-measured 2026-11-24): **p50 ~3.2 s -> ~43 ms, 3 -> 170-230 req/s** (at 50 concurrent: ~210 req/s, p50 ~230 ms); plan test: no temp B-tree |
 | P2 N+1 tags | **Fixed** (tags aggregated in the same query) | list = 2 statements for 3 or 50 rows (was 8 for 6 rows, 51+ for 50) |
 | P3 re-preparing statements | **Fixed** for fixed statements (prepared once) | test: 0 prepares for reads/creates after startup |
 | L1 atomic writes | **Fixed** (`BEGIN IMMEDIATE`/`ROLLBACK` around create and update) | trigger-based failure tests: no orphan post, old tags survive a failed update |
