@@ -93,7 +93,7 @@ Tooltips follow WCAG 1.4.13 (appear on hover and focus, stay while hovered, dism
 
 ```mermaid
 flowchart LR
-    U([Visitor / admin]) -->|HTTPS| V["Next.js 16 · Vercel<br/>server components, ~155 KB per page"]
+    U([Visitor / admin]) -->|HTTPS| V["Next.js 16 · Vercel<br/>server components, ~170 KB per page"]
     V -->|"REST + JSON"| A["Express API · Render<br/>closed-by-default writes"]
     A --> D[("SQLite<br/>posts · tags · post_tags")]
     A -. "OpenAPI 3.1 contract" .- C{{"docs/openapi.json"}}
@@ -165,13 +165,17 @@ Highlights: a seeded fuzzer fires 600 hostile requests per seed (4,800 across 8 
 
 ## ⚡ Performance (live, mobile profile: 4× CPU, 4G)
 
+Median of 5 cold-cache runs with `node e2e/perf/vitals.mjs` against the live site, 2026-11-24 (a quiet machine; the same run on a busy machine gives 3-5x worse times, so compare like with like).
+
 | Page | LCP | CLS | Transfer |
 |---|---|---|---|
-| Home | 1.26 s | 0.000 | 156 KB |
-| Blog | 1.00 s | 0.000 | 160 KB |
-| Post | 1.00 s | 0.000 | 154 KB |
+| Home | 1.42 s | 0.000 | 170 KB |
+| Blog | 1.38 s | 0.000 | 176 KB |
+| Post | 1.08 s | 0.000 | 175 KB |
 
-Backend: deep pagination went from 2.3 s to ~45 ms per request under load after indexing the sort order and dropping full-body reads from list queries.
+140-148 KB of every page is React/Next framework JavaScript. The 2026-11-20 numbers (1.00-1.26 s, 154-160 KB) predate the icon-first UI, which added about 4-10 KB of HTML per page (inline SVG icons and tooltips). Total blocking time on the mobile profile is 317-410 ms on the public pages, above the 200 ms budget the script enforces, so `perf/vitals.mjs` reports BUDGET EXCEEDED for the mobile profiles; LCP, CLS and weight are inside their budgets.
+
+Backend: deep pagination (page 400 of 5,000 posts, 10 concurrent clients) went from a p50 of about 3 s (3 requests/s) to about 43 ms (170-230 requests/s) after indexing the sort order and dropping full-body reads from list queries (re-measured 2026-11-24 against the pre-fix commit 15b5bc4). At 50 concurrent clients the current code serves about 210 requests/s with a p50 of about 230 ms.
 
 ## 📋 Project status
 
